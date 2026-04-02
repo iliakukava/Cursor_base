@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Илья — Портфолио</title>
+  <style>
+    :root {
+      --bg: #0b0f14;
+      --surface: #121821;
+      --surface-soft: #171f2a;
+      --text: #e7ebf0;
+      --muted: #aab4c1;
+      --line: rgba(255, 255, 255, 0.14);
+      --accent: #b9975b;
+      --shadow: 0 24px 50px rgba(0, 0, 0, 0.45);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      font-family: "Segoe UI", Tahoma, sans-serif;
+      color: var(--text);
+      background: var(--bg);
+      position: relative;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background-image: radial-gradient(rgba(255, 255, 255, 0.08) 0.5px, transparent 0.5px);
+      background-size: 3px 3px;
+      opacity: 0.08;
+      pointer-events: none;
+    }
+
+    .card {
+      width: min(900px, 100%);
+      border-radius: 20px;
+      padding: 30px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(6px);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::after {
+      content: "portfolio.log";
+      position: absolute;
+      right: 14px;
+      top: 14px;
+      color: rgba(226, 232, 240, 0.72);
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      border: 1px dashed rgba(226, 232, 240, 0.36);
+      border-radius: 7px;
+      padding: 5px 8px;
+      transform: rotate(3deg);
+    }
+
+    .nav {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+    }
+
+    .nav-link {
+      display: inline-block;
+      padding: 8px 14px;
+      border-radius: 999px;
+      color: var(--text);
+      text-decoration: none;
+      border: 1px solid rgba(255, 255, 255, 0.24);
+      background: var(--surface-soft);
+      transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+      font-size: 14px;
+    }
+
+    .nav-link:hover {
+      transform: translateY(-1px);
+      border-color: rgba(255, 255, 255, 0.28);
+      background: #1b2532;
+    }
+
+    .nav-link.active {
+      background: rgba(185, 151, 91, 0.18);
+      border-color: rgba(185, 151, 91, 0.6);
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 7px 12px;
+      border-radius: 999px 999px 999px 3px;
+      background: rgba(185, 151, 91, 0.2);
+      color: #e9d9bb;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 14px;
+    }
+
+    h1 {
+      margin: 0 0 12px;
+      font-size: clamp(30px, 5vw, 44px);
+      line-height: 1.15;
+    }
+
+    .intro {
+      margin: 0 0 22px;
+      color: var(--muted);
+      font-size: 17px;
+      line-height: 1.65;
+      max-width: 70ch;
+    }
+
+    .section-title {
+      margin: 20px 0 12px;
+      font-size: 20px;
+    }
+
+    .projects {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(230px, 1fr));
+      gap: 14px;
+    }
+
+    .project {
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 14px 14px 14px 4px;
+      padding: 14px;
+      background: var(--surface-soft);
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+
+    .project:hover {
+      border-color: rgba(185, 151, 91, 0.6);
+      transform: translateY(-2px);
+    }
+
+    .project h3 {
+      margin: 0 0 8px;
+      font-size: 17px;
+    }
+
+    .project p {
+      margin: 0 0 10px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .tags li {
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      background: rgba(185, 151, 91, 0.14);
+      border: 1px solid rgba(185, 151, 91, 0.28);
+    }
+
+    .project-note {
+      margin: 0 0 10px;
+      display: inline-block;
+      font-size: 12px;
+      color: #d8c7a9;
+      padding: 4px 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(185, 151, 91, 0.35);
+      background: rgba(185, 151, 91, 0.14);
+    }
+
+    .contacts {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 22px;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 12px 20px;
+      border-radius: 12px;
+      text-decoration: none;
+      color: #fff;
+      font-weight: 700;
+      background: #d4b27a;
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.35);
+      transition: transform 0.2s ease, filter 0.2s ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.04);
+    }
+
+    .btn.secondary {
+      background: #283444;
+    }
+
+    @media (max-width: 760px) {
+      .projects {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="card">
+    <nav class="nav">
+      <a class="nav-link" href="index.html">Обо мне</a>
+      <a class="nav-link active" href="portfolio.html">Портфолио</a>
+      <a class="nav-link" href="company.html">Компания</a>
+    </nav>
+
+    <span class="badge">Портфолио</span>
+    <h1>Проекты Ильи в data и AI</h1>
+    <p class="intro">
+      Ниже примеры учебных и pet-проектов, которые показывают мой подход: от анализа данных
+      и обучения модели до визуализации результатов и пользы для бизнеса.
+    </p>
+
+    <h2 class="section-title">Избранные проекты</h2>
+    <section class="projects">
+      <article class="project">
+        <h3>Прогноз успеваемости студентов</h3>
+        <span class="project-note">Учебный кейс</span>
+        <p>Собрал датасет активности, обучил модель для оценки риска снижения успеваемости и подготовил рекомендации для наставников.</p>
+        <ul class="tags">
+          <li>Python</li>
+          <li>Pandas</li>
+          <li>Scikit-learn</li>
+          <li>EDA</li>
+        </ul>
+      </article>
+
+      <article class="project">
+        <h3>Дашборд по продажам малого бизнеса</h3>
+        <span class="project-note">Практика визуализации</span>
+        <p>Построил интерактивный дашборд с ключевыми метриками по выручке, категориям и сезонности для быстрого принятия решений.</p>
+        <ul class="tags">
+          <li>SQL</li>
+          <li>Power BI</li>
+          <li>Data Visualization</li>
+        </ul>
+      </article>
+
+      <article class="project">
+        <h3>Классификация отзывов клиентов</h3>
+        <span class="project-note">NLP-прототип</span>
+        <p>Сделал пайплайн обработки текста и модель классификации тональности, чтобы автоматически сортировать обратную связь.</p>
+        <ul class="tags">
+          <li>NLP</li>
+          <li>Python</li>
+          <li>Machine Learning</li>
+        </ul>
+      </article>
+
+      <article class="project">
+        <h3>AI-помощник для учебных конспектов</h3>
+        <span class="project-note">Pet-проект</span>
+        <p>Прототип сервиса, который кратко структурирует лекции и генерирует контрольные вопросы для повторения материала.</p>
+        <ul class="tags">
+          <li>AI Tools</li>
+          <li>Prompt Engineering</li>
+          <li>Automation</li>
+        </ul>
+      </article>
+    </section>
+
+    <div class="contacts">
+      <a class="btn secondary" href="https://t.me/ilya" target="_blank" rel="noopener noreferrer">Telegram</a>
+      <a class="btn" href="mailto:ilya@example.com">Email</a>
+    </div>
+  </main>
+</body>
+</html>

@@ -1,0 +1,347 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Илья — Страница-визитка</title>
+  <style>
+    :root {
+      --bg: #0b0f14;
+      --surface: #121821;
+      --surface-soft: #171f2a;
+      --text: #e7ebf0;
+      --muted: #aab4c1;
+      --line: rgba(255, 255, 255, 0.14);
+      --accent: #b9975b;
+      --shadow: 0 24px 50px rgba(0, 0, 0, 0.45);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      font-family: "Segoe UI", Tahoma, sans-serif;
+      color: var(--text);
+      background: var(--bg);
+      position: relative;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background-image:
+        radial-gradient(rgba(255, 255, 255, 0.08) 0.5px, transparent 0.5px);
+      background-size: 3px 3px;
+      opacity: 0.08;
+      pointer-events: none;
+    }
+
+    .card {
+      width: min(760px, 100%);
+      border-radius: 20px;
+      padding: 30px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(6px);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::after {
+      content: "Илья / MAI / AI";
+      position: absolute;
+      right: 14px;
+      top: 14px;
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      color: rgba(231, 235, 240, 0.65);
+      transform: rotate(4deg);
+      border: 1px dashed rgba(231, 235, 240, 0.28);
+      border-radius: 8px;
+      padding: 5px 8px;
+    }
+
+    .nav {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+    }
+
+    .nav-link {
+      display: inline-block;
+      padding: 8px 14px;
+      border-radius: 999px;
+      color: var(--text);
+      text-decoration: none;
+      border: 1px solid rgba(255, 255, 255, 0.24);
+      background: var(--surface-soft);
+      transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+      font-size: 14px;
+    }
+
+    .nav-link:hover {
+      transform: translateY(-1px);
+      border-color: rgba(255, 255, 255, 0.28);
+      background: #1b2532;
+    }
+
+    .nav-link.active {
+      background: rgba(185, 151, 91, 0.18);
+      border-color: rgba(185, 151, 91, 0.6);
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 7px 12px;
+      border-radius: 999px 999px 999px 3px;
+      background: rgba(185, 151, 91, 0.2);
+      color: #e9d9bb;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 14px;
+    }
+
+    h1 {
+      margin: 0 0 14px;
+      font-size: clamp(30px, 5vw, 44px);
+      line-height: 1.15;
+      letter-spacing: 0.2px;
+    }
+
+    p {
+      margin: 0 0 12px;
+      color: var(--muted);
+      line-height: 1.65;
+      font-size: 17px;
+      max-width: 62ch;
+    }
+
+    .section-title {
+      margin: 18px 0 12px;
+      font-size: 18px;
+      font-weight: 700;
+      color: #f8fafc;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .section-title::before {
+      content: "//";
+      color: var(--accent);
+      font-size: 14px;
+      letter-spacing: 0.08em;
+    }
+
+    .info-icons {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(110px, 1fr));
+      gap: 12px;
+      margin: 0 0 24px;
+    }
+
+    .info-item {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 102px;
+      border-radius: 14px 14px 14px 4px;
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      background: var(--surface-soft);
+      cursor: pointer;
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+
+    .info-item:hover {
+      transform: translateY(-2px) rotate(-0.2deg);
+      border-color: rgba(185, 151, 91, 0.6);
+    }
+
+    .info-icon {
+      font-size: 28px;
+      line-height: 1;
+    }
+
+    .info-label {
+      font-size: 14px;
+      color: var(--text);
+      font-weight: 600;
+      text-align: center;
+      padding: 0 8px;
+    }
+
+    .tooltip {
+      position: absolute;
+      left: 50%;
+      bottom: calc(100% + 10px);
+      transform: translateX(-50%) translateY(8px);
+      width: min(260px, 88vw);
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      background: #0f141c;
+      color: var(--text);
+      font-size: 13px;
+      line-height: 1.45;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+      z-index: 5;
+    }
+
+    .tooltip::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 100%;
+      width: 10px;
+      height: 10px;
+      border-right: 1px solid rgba(255, 255, 255, 0.16);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.16);
+      background: #0f141c;
+      transform: translateX(-50%) rotate(45deg);
+    }
+
+    .info-item:hover .tooltip {
+      opacity: 1;
+      visibility: visible;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .stack {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 0 0 24px;
+      padding: 0;
+      list-style: none;
+    }
+
+    .stack li {
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 14px;
+      color: #e2e8f0;
+      background: linear-gradient(
+        120deg,
+        rgba(59, 130, 246, 0.28),
+        rgba(139, 92, 246, 0.26)
+      );
+      border: 1px solid rgba(255, 255, 255, 0.22);
+    }
+
+    .contacts {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .personal-note {
+      margin: 8px 0 20px;
+      padding: 12px 14px;
+      border-left: 3px solid var(--accent);
+      background: var(--surface-soft);
+      color: #d8c7a9;
+      font-size: 14px;
+      border-radius: 0 10px 10px 0;
+    }
+
+    @media (max-width: 760px) {
+      .info-icons {
+        grid-template-columns: repeat(2, minmax(120px, 1fr));
+      }
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 12px 20px;
+      border-radius: 12px 12px 12px 4px;
+      text-decoration: none;
+      background: #d4b27a;
+      color: #ffffff;
+      font-weight: 700;
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.35);
+      transition: transform 0.2s ease, filter 0.2s ease, background 0.2s ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+      filter: brightness(1.04);
+      background: #c8a56a;
+    }
+
+    .btn:active {
+      transform: translateY(0) scale(0.98);
+      filter: brightness(0.98);
+    }
+
+    .btn.secondary {
+      background: #283444;
+    }
+
+    .btn.secondary:hover {
+      background: #314157;
+    }
+  </style>
+</head>
+<body>
+  <main class="card">
+    <nav class="nav">
+      <a class="nav-link active" href="index.html">Обо мне</a>
+      <a class="nav-link" href="portfolio.html">Портфолио</a>
+      <a class="nav-link" href="company.html">Компания</a>
+    </nav>
+    <span class="badge">Страница-визитка</span>
+    <h1>Илья — студент 2 курса МАИ</h1>
+    <p>
+      Я учусь в МАИ на направлении «Фундаментальная информатика и информационные технологии».
+      Увлекаюсь анализом данных и машинным обучением, а также активно изучаю современные
+      AI-инструменты.
+    </p>
+    <div class="personal-note">
+      Люблю проекты, где из "сырых" данных получается решение, которое реально экономит время людям.
+    </div>
+    <h2 class="section-title">Наведи на иконки</h2>
+    <div class="info-icons">
+      <div class="info-item">
+        <span class="info-icon">🎓</span>
+        <span class="info-label">Вуз</span>
+        <div class="tooltip">МАИ, 2 курс.</div>
+      </div>
+      <div class="info-item">
+        <span class="info-icon">📚</span>
+        <span class="info-label">Направление</span>
+        <div class="tooltip">Фундаментальная информатика и информационные технологии.</div>
+      </div>
+      <div class="info-item">
+        <span class="info-icon">❤️</span>
+        <span class="info-label">Интересы</span>
+        <div class="tooltip">Анализ данных, машинное обучение и изучение AI-инструментов.</div>
+      </div>
+      <div class="info-item">
+        <span class="info-icon">🛠️</span>
+        <span class="info-label">Стек</span>
+        <div class="tooltip">Python, SQL, Pandas, Scikit-learn, Machine Learning, Data Analysis, AI Tools, Git.</div>
+      </div>
+    </div>
+    <h2 class="section-title">Контакты</h2>
+    <div class="contacts">
+      <a class="btn secondary" href="https://t.me/ilya" target="_blank" rel="noopener noreferrer">Telegram</a>
+      <a class="btn" href="mailto:ilya@example.com">Email</a>
+    </div>
+  </main>
+</body>
+</html>

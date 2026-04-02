@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Резюме — Кукава Илья</title>
+  <style>
+    :root {
+      --bg: #f2f4f7;
+      --paper: #ffffff;
+      --text: #1f2937;
+      --muted: #4b5563;
+      --line: #d1d5db;
+      --accent: #0f172a;
+      --accent-soft: #e5e7eb;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: "Segoe UI", Arial, sans-serif;
+      line-height: 1.55;
+      padding: 24px;
+    }
+
+    .resume {
+      width: min(860px, 100%);
+      margin: 0 auto;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.1);
+      padding: 34px 36px;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      border-bottom: 2px solid var(--accent);
+      padding-bottom: 12px;
+      margin-bottom: 18px;
+    }
+
+    h1 {
+      margin: 0 0 4px;
+      font-size: 30px;
+      letter-spacing: 0.2px;
+    }
+
+    .role {
+      margin: 0;
+      color: var(--muted);
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .contacts {
+      text-align: right;
+      font-size: 14px;
+      color: var(--muted);
+      min-width: 230px;
+    }
+
+    .contacts a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    .section {
+      margin-top: 18px;
+    }
+
+    .section-title {
+      margin: 0 0 10px;
+      padding: 6px 0;
+      font-size: 16px;
+      text-transform: none;
+      letter-spacing: 0.01em;
+      color: var(--accent);
+      background: transparent;
+      border-left: none;
+      border-bottom: 1px solid var(--line);
+      font-weight: 700;
+    }
+
+    p {
+      margin: 0;
+      color: var(--text);
+      font-size: 15px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px 22px;
+    }
+
+    ul {
+      margin: 0;
+      padding-left: 18px;
+    }
+
+    li {
+      margin: 5px 0;
+      color: var(--text);
+      font-size: 15px;
+    }
+
+    .project {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 10px;
+      margin-bottom: 8px;
+      break-inside: avoid;
+    }
+
+    .project h3 {
+      margin: 0 0 4px;
+      font-size: 14px;
+      color: #111827;
+    }
+
+    .project p {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .small {
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    @page {
+      size: A4;
+      margin: 12mm;
+    }
+
+    @media print {
+      body {
+        background: #fff;
+        padding: 0;
+      }
+
+      .resume {
+        width: 100%;
+        border: none;
+        border-radius: 0;
+        box-shadow: none;
+        padding: 0;
+      }
+
+      .section,
+      .project,
+      .grid,
+      ul {
+        break-inside: avoid;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .header {
+        flex-direction: column;
+      }
+
+      .contacts {
+        text-align: left;
+        min-width: auto;
+      }
+
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="resume">
+    <header class="header">
+      <div>
+        <h1>Кукава Илья</h1>
+        <p class="role">Стажер / младший бизнес-аналитик</p>
+      </div>
+      <div class="contacts">
+        <div><strong>Email:</strong> <a href="mailto:iliakukava50@gmail.com">iliakukava50@gmail.com</a></div>
+        <div><strong>Telegram:</strong> <a href="https://t.me/lilihkqw" target="_blank" rel="noopener noreferrer">@lilihkqw</a></div>
+      </div>
+    </header>
+
+    <section class="section">
+      <h2 class="section-title">Обо мне</h2>
+      <p>
+        Студент 2 курса МАИ (Институт №8), направление "Фундаментальная информатика и информационные технологии".
+        Интересуюсь анализом бизнес-процессов и внедрением AI-решений. Уверенно работаю с Excel и SQL,
+        умею структурировать задачи, анализировать данные и формулировать выводы для принятия решений.
+      </p>
+    </section>
+
+    <section class="section">
+      <h2 class="section-title">Образование</h2>
+      <div class="grid">
+        <div>
+          <p><strong>МАИ, Институт №8</strong></p>
+          <p class="small">Фундаментальная информатика и информационные технологии</p>
+        </div>
+        <div>
+          <p><strong>Статус:</strong> бакалавриат, 2 курс</p>
+          <p class="small">Фокус: ИТ, аналитика, применение AI-инструментов</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2 class="section-title">Ключевые навыки</h2>
+      <div class="grid">
+        <ul>
+          <li>Анализ и описание бизнес-процессов</li>
+          <li>Excel: сводные таблицы, функции, структурирование отчетности</li>
+          <li>SQL: SELECT, JOIN, GROUP BY, фильтрация и агрегаты</li>
+          <li>Python (Seaborn, Matplotlib, numpy, pandas)</li>
+          <li>Подготовка и очистка данных для анализа (EDA)</li>
+        </ul>
+        <ul>
+          <li>Базовое понимание BI-подходов и аналитических метрик</li>
+          <li>Интерес к AI-автоматизации</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2 class="section-title">Сертификаты и обучение</h2>
+      <ul>
+        <li>"Базовый курс по анализу данных" от Т-Образования.</li>
+        <li>"Симулятор SQL" от karpov courses.</li>
+        <li>"Поколение Python": курс для продвинутых.</li>
+        <li>Открытый лекторий по введению в анализ данных от VK Education.</li>
+        <li>"Аналитик данных" от сообщества "Поступашки".</li>
+      </ul>
+    </section>
+  </main>
+</body>
+</html>
