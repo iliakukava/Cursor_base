@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TeleFlow — питч</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#cover">К содержанию</a>
+
+    <nav class="deck-nav" aria-label="Разделы презентации">
+      <ul class="deck-nav__list"></ul>
+    </nav>
+
+    <main class="deck" id="deck">
+      <section class="slide slide--hero" id="cover" data-title="Титул">
+        <div class="slide__inner reveal">
+          <p class="eyebrow">Итоговый проект · MVP</p>
+          <h1 class="slide__title">TeleFlow</h1>
+          <p class="slide__lead">
+            Дайджесты, тематическая база и черновики постов из Telegram — с
+            <span class="accent">LLM</span> и под вашим контролем.
+          </p>
+        </div>
+        <p class="hint">Прокрутка или стрелки ↑ ↓ · <kbd>Home</kbd> / <kbd>End</kbd></p>
+      </section>
+
+      <section class="slide" id="problem" data-title="Проблема">
+        <div class="slide__inner reveal">
+          <h2>Проблема</h2>
+          <p class="slide__text">
+            Слишком много каналов и папок: непрочитанное копится, важное теряется,
+            на ручную выжимку уходит время каждый день.
+          </p>
+        </div>
+      </section>
+
+      <section class="slide" id="product" data-title="Продукт">
+        <div class="slide__inner reveal">
+          <h2>Что это</h2>
+          <p class="slide__text">
+            Локальный <strong>Telegram userbot</strong> (Telethon): команды в ЛС,
+            сохранение материалов по темам, генерация текста через
+            <strong>OpenRouter</strong>.
+          </p>
+          <ul class="feature-list">
+            <li><code>/digest</code> — дайджест из выбранных папок</li>
+            <li>Forward поста → выбор темы → база знаний</li>
+            <li><code>/write &lt;тема&gt;</code> — пост из накопленного</li>
+            <li><code>/stats</code> — сколько постов по темам</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="slide slide--wide" id="flow" data-title="Поток">
+        <div class="slide__inner reveal">
+          <h2>Схема потока</h2>
+          <figure class="flow-diagram" aria-label="Схема TeleFlow">
+            <svg viewBox="0 0 720 200" xmlns="http://www.w3.org/2000/svg" role="img">
+              <defs>
+                <marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
+                  <path d="M0,0 L8,4 L0,8 Z" fill="var(--accent-dim)" />
+                </marker>
+              </defs>
+              <g class="flow-node" data-step="0">
+                <rect x="8" y="60" width="100" height="72" rx="10" />
+                <text x="58" y="100" text-anchor="middle">Папки TG</text>
+              </g>
+              <line x1="116" y1="96" x2="148" y2="96" stroke="var(--accent-dim)" stroke-width="2" marker-end="url(#arrow)" />
+              <g class="flow-node" data-step="1">
+                <rect x="152" y="60" width="100" height="72" rx="10" />
+                <text x="202" y="100" text-anchor="middle">Сбор</text>
+              </g>
+              <line x1="260" y1="96" x2="292" y2="96" stroke="var(--accent-dim)" stroke-width="2" marker-end="url(#arrow)" />
+              <g class="flow-node" data-step="2">
+                <rect x="296" y="48" width="112" height="96" rx="10" />
+                <text x="352" y="88" text-anchor="middle">OpenRouter</text>
+                <text x="352" y="112" text-anchor="middle" class="flow-small">LLM</text>
+              </g>
+              <line x1="414" y1="96" x2="446" y2="96" stroke="var(--accent-dim)" stroke-width="2" marker-end="url(#arrow)" />
+              <g class="flow-node" data-step="3">
+                <rect x="450" y="60" width="100" height="72" rx="10" />
+                <text x="500" y="100" text-anchor="middle">ЛС / канал</text>
+              </g>
+              <line x1="558" y1="96" x2="590" y2="96" stroke="var(--accent-dim)" stroke-width="2" marker-end="url(#arrow)" />
+              <g class="flow-node" data-step="4">
+                <rect x="594" y="52" width="118" height="88" rx="10" />
+                <text x="653" y="92" text-anchor="middle">База тем</text>
+                <text x="653" y="116" text-anchor="middle" class="flow-small">JSON</text>
+              </g>
+            </svg>
+          </figure>
+          <p class="slide__caption">Разметка дайджеста и синтез <code>/write</code> — там, где ИИ даёт выигрыш по времени.</p>
+        </div>
+      </section>
+
+      <section class="slide" id="value" data-title="Польза">
+        <div class="slide__inner reveal">
+          <h2>Польза</h2>
+          <p class="slide__text">
+            Один контур: <strong>обзор</strong> непрочитанного,
+            <strong>архив</strong> по темам, <strong>черновик</strong> поста под свою ленту или канал —
+            без ручного копипаста по десятку чатов.
+          </p>
+        </div>
+      </section>
+
+      <section class="slide" id="reliability" data-title="Надёжность">
+        <div class="slide__inner reveal">
+          <h2>Контроль и безопасность</h2>
+          <ul class="feature-list">
+            <li>Доступ только для пользователей из whitelist</li>
+            <li>Режим <code>DRY_RUN</code> — превью без записи в канал и state</li>
+            <li>Длинные ответы — отправка частями (лимиты Telegram)</li>
+            <li>Данные локально: <code>data/knowledge/</code>, <code>state.db</code></li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="slide" id="time" data-title="Время">
+        <div class="slide__inner reveal">
+          <h2>Время на проект</h2>
+          <p class="slide__text placeholder-block">
+            Замените этот блок: например «~__ часов», что заняло больше всего — Telegram /
+            LLM / команды в ЛС.
+          </p>
+        </div>
+      </section>
+
+      <section class="slide" id="roadmap" data-title="Дальше">
+        <div class="slide__inner reveal">
+          <h2>Развитие</h2>
+          <ul class="feature-list">
+            <li>Планировщик дайджестов по расписанию</li>
+            <li>Улучшение качества синтеза и шаблоны рубрик</li>
+            <li>Дашборд или отдельный UI поверх того же API</li>
+            <li>Хостинг на VPS вместо домашнего ПК</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="slide" id="course" data-title="Курс">
+        <div class="slide__inner reveal">
+          <h2>С курса</h2>
+          <p class="slide__text placeholder-block">
+            1–2 тезиса: агенты, границы ответственности ИИ, итерации в Cursor,
+            работа с конфигом и продакшен-ограничениями — на ваш выбор.
+          </p>
+        </div>
+      </section>
+
+      <section class="slide slide--cta" id="cta" data-title="Вопросы">
+        <div class="slide__inner reveal">
+          <h2>Вопросы?</h2>
+          <p class="slide__lead">Спасибо за внимание.</p>
+          <p class="slide__caption">
+            Репозиторий: <code>assist-final-project</code> · см. <code>README.md</code>
+          </p>
+        </div>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>

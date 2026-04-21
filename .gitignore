@@ -1,4 +1,7 @@
-# Локальный Telegram-проект — не в репозитории
-05_tg_project/
 .cursorrules
-04_Резюму_Мослифт.html
+04_Резюме_Мослифт.html
+04_agents_week
+05_анализ_экран
+01_personal_context
+.venv/
+.env
