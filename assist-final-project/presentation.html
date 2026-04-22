@@ -1,0 +1,1257 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AssistHQ — финальный проект · Кукава Илья · АССИСТ+</title>
+  <meta name="description" content="Питч финального проекта курса «Cursor AI для бизнес-ассистентов» — Кукава Илья" />
+  <style>
+    :root {
+      --bg-0: #07070c;
+      --bg-1: #0e1020;
+      --bg-2: #151933;
+      --ink: #f5f6fb;
+      --ink-dim: #a8adc4;
+      --ink-mute: #6b7088;
+      --line: rgba(255, 255, 255, 0.08);
+      --line-strong: rgba(255, 255, 255, 0.18);
+      --brand: #7c5cff;
+      --brand-2: #00e6c3;
+      --warn: #ffb85c;
+      --danger: #ff5c8a;
+      --card: rgba(255, 255, 255, 0.04);
+      --card-hover: rgba(255, 255, 255, 0.07);
+      --grad-1: linear-gradient(135deg, #7c5cff 0%, #00e6c3 100%);
+      --grad-2: linear-gradient(135deg, #ff5c8a 0%, #ffb85c 100%);
+      --grad-3: linear-gradient(135deg, #5cc8ff 0%, #7c5cff 100%);
+      --shadow-card: 0 20px 60px rgba(0, 0, 0, 0.45);
+      --radius: 18px;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+
+    body {
+      margin: 0;
+      background:
+        radial-gradient(1200px 800px at 10% -10%, rgba(124, 92, 255, 0.28), transparent 60%),
+        radial-gradient(900px 700px at 110% 10%, rgba(0, 230, 195, 0.18), transparent 60%),
+        radial-gradient(900px 900px at 50% 120%, rgba(255, 92, 138, 0.14), transparent 60%),
+        var(--bg-0);
+      color: var(--ink);
+      font-family: "Inter", "Segoe UI", "Manrope", Roboto, Arial, sans-serif;
+      font-feature-settings: "ss01", "cv11";
+      overflow: hidden;
+      -webkit-font-smoothing: antialiased;
+      letter-spacing: -0.01em;
+    }
+
+    /* ---------- Ambient grid ---------- */
+    .grid-bg {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(transparent 95%, rgba(255,255,255,0.035) 95%),
+        linear-gradient(90deg, transparent 95%, rgba(255,255,255,0.035) 95%);
+      background-size: 56px 56px;
+      mask-image: radial-gradient(ellipse at 50% 40%, rgba(0,0,0,0.9), transparent 75%);
+      z-index: 0;
+    }
+
+    /* ---------- Deck ---------- */
+    .deck {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      display: grid;
+      place-items: center;
+      z-index: 1;
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      padding: 6vh 7vw 10vh;
+      opacity: 0;
+      transform: translateY(14px) scale(0.995);
+      transition: opacity .45s ease, transform .55s cubic-bezier(.2,.8,.2,1);
+      pointer-events: none;
+    }
+    .slide.active {
+      opacity: 1;
+      transform: none;
+      pointer-events: auto;
+    }
+    .slide-inner {
+      width: min(1180px, 100%);
+      max-height: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+    }
+
+    /* ---------- Typography ---------- */
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 6px 12px;
+      border-radius: 999px;
+      background: var(--card);
+      border: 1px solid var(--line);
+      color: var(--ink-dim);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      width: max-content;
+    }
+    .eyebrow .dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--brand-2);
+      box-shadow: 0 0 0 4px rgba(0, 230, 195, 0.15);
+    }
+    h1, h2, h3 { margin: 0; font-weight: 700; }
+    h1 {
+      font-size: clamp(40px, 6vw, 84px);
+      line-height: 1.02;
+      letter-spacing: -0.03em;
+    }
+    h2 {
+      font-size: clamp(30px, 3.6vw, 48px);
+      line-height: 1.08;
+      letter-spacing: -0.025em;
+    }
+    h3 {
+      font-size: clamp(18px, 1.4vw, 22px);
+      color: var(--ink);
+    }
+    p { margin: 0; color: var(--ink-dim); font-size: clamp(15px, 1.2vw, 18px); line-height: 1.55; }
+    .lead { font-size: clamp(18px, 1.45vw, 22px); color: var(--ink); max-width: 820px; }
+
+    .gradient-text {
+      background: var(--grad-1);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .warn-text { color: var(--warn); }
+    .brand-text { color: var(--brand-2); }
+
+    /* ---------- Layout helpers ---------- */
+    .grid-2 { display: grid; grid-template-columns: 1.1fr 1fr; gap: 28px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; }
+    .row { display: flex; gap: 16px; flex-wrap: wrap; }
+    .stack { display: flex; flex-direction: column; gap: 14px; }
+    .spread { display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 22px;
+      backdrop-filter: blur(8px);
+      transition: transform .3s ease, border-color .3s ease, background .3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: var(--grad-1);
+      opacity: 0;
+      mix-blend-mode: overlay;
+      transition: opacity .3s ease;
+      pointer-events: none;
+    }
+    .slide.active .card:hover {
+      transform: translateY(-4px);
+      border-color: var(--line-strong);
+      background: var(--card-hover);
+    }
+    .card:hover::before { opacity: 0.18; }
+    .card .kicker {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--ink-mute);
+      margin-bottom: 8px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .card .kicker .num {
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      color: var(--brand-2);
+      font-weight: 700;
+    }
+
+    .pill {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 5px 10px; border-radius: 999px;
+      background: rgba(124, 92, 255, 0.12);
+      color: #c9beff;
+      border: 1px solid rgba(124, 92, 255, 0.35);
+      font-size: 12px; font-weight: 600;
+    }
+    .pill.green { background: rgba(0, 230, 195, 0.1); color: #7cf1dc; border-color: rgba(0, 230, 195, 0.35); }
+    .pill.warn  { background: rgba(255, 184, 92, 0.12); color: #ffd49a; border-color: rgba(255, 184, 92, 0.35); }
+    .pill.pink  { background: rgba(255, 92, 138, 0.12); color: #ffb1c6; border-color: rgba(255, 92, 138, 0.35); }
+
+    .kpi {
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: clamp(34px, 3.8vw, 56px);
+      line-height: 1;
+      font-weight: 700;
+      background: var(--grad-1);
+      -webkit-background-clip: text; background-clip: text; color: transparent;
+      letter-spacing: -0.02em;
+    }
+    .kpi.alt { background: var(--grad-2); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .kpi.alt3 { background: var(--grad-3); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .kpi-sub { color: var(--ink-dim); font-size: 14px; margin-top: 6px; }
+
+    ul.clean { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; }
+    ul.clean li {
+      color: var(--ink);
+      font-size: clamp(15px, 1.15vw, 17px);
+      display: flex; gap: 10px; align-items: baseline;
+    }
+    ul.clean li::before {
+      content: "";
+      width: 8px; height: 8px; border-radius: 2px;
+      background: var(--grad-1);
+      transform: translateY(4px);
+      flex-shrink: 0;
+    }
+    ul.clean.dim li { color: var(--ink-dim); }
+    ul.clean.dim li::before { background: var(--ink-mute); }
+
+    code, .mono {
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: 13px;
+      color: #d9ddf2;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--line);
+      padding: 2px 7px; border-radius: 6px;
+    }
+
+    /* ---------- Chrome: progress, nav, counter, timer ---------- */
+    .chrome-top {
+      position: fixed; top: 0; left: 0; right: 0;
+      height: 3px; background: rgba(255,255,255,0.06);
+      z-index: 50;
+    }
+    .chrome-top .bar {
+      height: 100%; width: 0%;
+      background: var(--grad-1);
+      transition: width .4s ease;
+    }
+    .chrome-bottom {
+      position: fixed; bottom: 18px; left: 24px; right: 24px;
+      z-index: 50;
+      display: flex; justify-content: space-between; align-items: center;
+      color: var(--ink-mute);
+      font-size: 12px;
+      pointer-events: none;
+    }
+    .chrome-bottom > * { pointer-events: auto; }
+    .brand-mark {
+      display: inline-flex; align-items: center; gap: 10px;
+      color: var(--ink-dim); font-weight: 600; font-size: 13px;
+      letter-spacing: 0.02em;
+    }
+    .brand-mark .logo {
+      width: 22px; height: 22px; border-radius: 6px;
+      background: var(--grad-1);
+      display: grid; place-items: center;
+      color: #0b0b16; font-weight: 800; font-size: 12px;
+      box-shadow: 0 6px 18px rgba(124, 92, 255, 0.35);
+    }
+    .nav {
+      display: inline-flex; gap: 8px; align-items: center;
+      background: rgba(18, 20, 40, 0.6);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 6px;
+      backdrop-filter: blur(10px);
+    }
+    .nav button {
+      width: 32px; height: 32px; border-radius: 999px;
+      border: 1px solid var(--line);
+      background: transparent; color: var(--ink);
+      cursor: pointer;
+      display: grid; place-items: center;
+      transition: background .2s ease, border-color .2s ease;
+    }
+    .nav button:hover { background: rgba(255,255,255,0.07); border-color: var(--line-strong); }
+    .nav .counter {
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: 12px; color: var(--ink-dim);
+      padding: 0 10px;
+      min-width: 64px; text-align: center;
+    }
+    .timer {
+      display: inline-flex; align-items: center; gap: 10px;
+      background: rgba(18, 20, 40, 0.6);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 6px 12px;
+      color: var(--ink);
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: 12px;
+      backdrop-filter: blur(10px);
+    }
+    .timer .led {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--ink-mute);
+    }
+    .timer.running .led { background: var(--brand-2); box-shadow: 0 0 0 4px rgba(0,230,195,0.15); }
+    .timer.over .led { background: var(--danger); box-shadow: 0 0 0 4px rgba(255,92,138,0.2); }
+    .timer button {
+      background: transparent; border: none; color: var(--ink-dim);
+      cursor: pointer; padding: 0 4px; font-size: 11px;
+      letter-spacing: 0.08em; text-transform: uppercase;
+    }
+    .timer button:hover { color: var(--ink); }
+
+    /* ---------- Slide 1: cover ---------- */
+    .cover {
+      text-align: left;
+    }
+    .cover .title-block { display: flex; flex-direction: column; gap: 16px; }
+    .cover .signature {
+      display: flex; gap: 16px; align-items: center;
+      color: var(--ink-dim); font-size: 14px;
+    }
+    .avatar {
+      width: 52px; height: 52px; border-radius: 50%;
+      background: var(--grad-1);
+      display: grid; place-items: center;
+      color: #0b0b16; font-weight: 800; font-size: 18px;
+      box-shadow: 0 10px 30px rgba(124, 92, 255, 0.35);
+    }
+    .orb {
+      position: absolute;
+      width: 420px; height: 420px; border-radius: 50%;
+      background: var(--grad-1);
+      filter: blur(80px);
+      opacity: 0.35;
+      pointer-events: none;
+      animation: float 12s ease-in-out infinite;
+    }
+    .orb.b { background: var(--grad-2); right: -120px; top: 60%; opacity: 0.22; animation-delay: -6s; }
+    @keyframes float {
+      0%, 100% { transform: translate(0,0) scale(1); }
+      50% { transform: translate(30px,-20px) scale(1.06); }
+    }
+
+    /* ---------- Problem ---------- */
+    .chaos-list {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px 18px;
+    }
+    .chaos-list li { position: relative; padding-left: 22px; color: var(--ink); font-size: 15px; }
+    .chaos-list li::before {
+      content: "✕";
+      position: absolute; left: 0; top: 0;
+      color: var(--danger);
+      font-family: "JetBrains Mono", monospace;
+    }
+
+    /* ---------- Architecture ---------- */
+    .arch {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      align-items: stretch;
+    }
+    .arch .node {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 16px;
+      position: relative;
+      overflow: hidden;
+    }
+    .arch .node .tag {
+      font-size: 11px; font-weight: 700; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--ink-mute);
+    }
+    .arch .node h4 { margin: 6px 0 6px; font-size: 16px; color: var(--ink); }
+    .arch .node p { font-size: 13px; color: var(--ink-dim); line-height: 1.4; }
+    .arch .node .stripe {
+      position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: var(--grad-1);
+    }
+    .arch .node.alt .stripe { background: var(--grad-2); }
+    .arch .node.alt3 .stripe { background: var(--grad-3); }
+
+    .flow {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+      align-items: center;
+      margin-top: 6px;
+    }
+    .flow .step {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 14px 12px;
+      text-align: center;
+    }
+    .flow .step .n {
+      font-family: "JetBrains Mono", monospace;
+      color: var(--brand-2);
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .flow .step h5 { margin: 6px 0 2px; font-size: 14px; color: var(--ink); }
+    .flow .step p { font-size: 12px; color: var(--ink-mute); }
+    .flow .arrow {
+      color: var(--ink-mute);
+      font-family: "JetBrains Mono", monospace;
+      text-align: center;
+    }
+
+    /* ---------- Modules map ---------- */
+    .modules {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+    .module {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 14px;
+      position: relative;
+      min-height: 128px;
+      overflow: hidden;
+      transition: transform .25s ease, border-color .25s ease;
+    }
+    .slide.active .module:hover { transform: translateY(-3px); border-color: var(--line-strong); }
+    .module .mno {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 12px; color: var(--ink-mute);
+      letter-spacing: 0.1em;
+    }
+    .module h5 { margin: 6px 0 8px; font-size: 15px; color: var(--ink); }
+    .module p { font-size: 12.5px; color: var(--ink-dim); line-height: 1.4; }
+    .module .dot-row { display: flex; gap: 4px; margin-top: 10px; }
+    .module .dot-row span {
+      width: 8px; height: 8px; border-radius: 2px;
+      background: rgba(255,255,255,0.1);
+    }
+    .module .dot-row span.on { background: var(--grad-1); }
+
+    /* ---------- Timeline ---------- */
+    .timeline {
+      position: relative;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 14px;
+      padding-top: 24px;
+    }
+    .timeline::before {
+      content: "";
+      position: absolute;
+      left: 0; right: 0; top: 18px;
+      height: 2px;
+      background: linear-gradient(90deg, var(--brand) 0%, var(--brand-2) 100%);
+      opacity: 0.4;
+    }
+    .tl-item { position: relative; }
+    .tl-item .marker {
+      width: 14px; height: 14px; border-radius: 50%;
+      background: var(--grad-1);
+      box-shadow: 0 0 0 4px rgba(124, 92, 255, 0.18);
+      position: absolute; top: -30px; left: 4px;
+    }
+    .tl-item h5 { font-size: 14px; margin: 0 0 4px; color: var(--ink); }
+    .tl-item p { font-size: 12.5px; color: var(--ink-dim); line-height: 1.45; }
+    .tl-item .when {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 11px;
+      color: var(--brand-2);
+      letter-spacing: 0.05em;
+    }
+
+    /* ---------- Roadmap ---------- */
+    .roadmap {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+    .rm {
+      border: 1px dashed var(--line-strong);
+      border-radius: 14px;
+      padding: 16px;
+      background: rgba(255,255,255,0.02);
+    }
+    .rm .horizon { font-size: 12px; color: var(--brand-2); letter-spacing: 0.1em; text-transform: uppercase; font-weight: 700; }
+    .rm h4 { margin: 6px 0; font-size: 17px; }
+    .rm ul { margin: 0; padding-left: 18px; color: var(--ink-dim); font-size: 13px; line-height: 1.5; }
+
+    /* ---------- CTA ---------- */
+    .cta {
+      display: grid;
+      grid-template-columns: 1.1fr 1fr;
+      gap: 24px;
+      align-items: stretch;
+    }
+    .cta-main {
+      padding: 28px;
+      border-radius: 22px;
+      background:
+        linear-gradient(135deg, rgba(124,92,255,0.2) 0%, rgba(0,230,195,0.12) 100%);
+      border: 1px solid var(--line-strong);
+    }
+    .contacts-box {
+      padding: 22px;
+      border-radius: 18px;
+      background: var(--card);
+      border: 1px solid var(--line);
+      display: flex; flex-direction: column; gap: 12px;
+    }
+    .contact-row {
+      display: flex; align-items: center; gap: 12px;
+      color: var(--ink);
+      font-size: 15px;
+    }
+    .contact-row .ic {
+      width: 34px; height: 34px; border-radius: 10px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--line);
+      display: grid; place-items: center; color: var(--brand-2);
+    }
+    .contact-row a { color: var(--ink); text-decoration: none; }
+    .contact-row a:hover { color: var(--brand-2); }
+
+    /* ---------- Takeaways ---------- */
+    .takeaways { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+    .take {
+      padding: 16px;
+      border-radius: 14px;
+      background: var(--card);
+      border: 1px solid var(--line);
+    }
+    .take .t { font-size: 12px; color: var(--brand-2); letter-spacing: 0.1em; text-transform: uppercase; font-weight: 700; }
+    .take h5 { margin: 6px 0; font-size: 16px; }
+    .take p { font-size: 13.5px; color: var(--ink-dim); }
+
+    /* ---------- Quote ---------- */
+    .quote-card {
+      padding: 28px;
+      border-radius: 22px;
+      background: var(--card);
+      border: 1px solid var(--line);
+      position: relative;
+      overflow: hidden;
+    }
+    .quote-card::before {
+      content: "\201C";
+      position: absolute; top: -30px; left: 12px;
+      font-size: 220px; color: rgba(124,92,255,0.15);
+      font-family: "Georgia", serif;
+      line-height: 1;
+    }
+    .quote-card p {
+      color: var(--ink); font-size: clamp(18px, 1.8vw, 24px);
+      line-height: 1.5; font-weight: 500;
+      position: relative; z-index: 1;
+    }
+
+    /* ---------- Help overlay ---------- */
+    .help {
+      position: fixed;
+      right: 18px; top: 18px;
+      z-index: 60;
+      background: rgba(18, 20, 40, 0.6);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 8px 12px;
+      color: var(--ink-dim);
+      font-size: 11px;
+      font-family: "JetBrains Mono", monospace;
+      backdrop-filter: blur(10px);
+    }
+    .help kbd {
+      background: rgba(255,255,255,0.07);
+      border: 1px solid var(--line);
+      padding: 1px 5px; border-radius: 4px;
+      color: var(--ink);
+      font-size: 10px;
+    }
+
+    /* ---------- Responsive guardrails ---------- */
+    @media (max-width: 980px) {
+      .grid-2, .cta { grid-template-columns: 1fr; }
+      .grid-3, .grid-4, .modules, .arch, .flow, .timeline, .roadmap, .takeaways {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .flow .arrow { display: none; }
+      h1 { font-size: 44px; }
+    }
+    @media (max-width: 620px) {
+      .grid-3, .grid-4, .modules, .arch, .flow, .timeline, .roadmap, .takeaways {
+        grid-template-columns: 1fr;
+      }
+      .slide { padding: 4vh 5vw 9vh; }
+    }
+
+    /* ---------- Print to PDF ---------- */
+    @media print {
+      @page { size: 1440px 900px; margin: 0; }
+      body { background: #0a0a12; overflow: visible; }
+      .grid-bg, .chrome-top, .chrome-bottom, .help { display: none !important; }
+      .deck { display: block; width: 1440px; height: auto; }
+      .slide {
+        position: relative;
+        opacity: 1 !important;
+        transform: none !important;
+        width: 1440px; height: 900px;
+        page-break-after: always;
+        break-after: page;
+      }
+    }
+
+    /* ---------- Entry animations ---------- */
+    .slide.active .anim > * {
+      animation: rise .6s cubic-bezier(.2,.8,.2,1) both;
+    }
+    .slide.active .anim > *:nth-child(1) { animation-delay: .05s; }
+    .slide.active .anim > *:nth-child(2) { animation-delay: .12s; }
+    .slide.active .anim > *:nth-child(3) { animation-delay: .2s; }
+    .slide.active .anim > *:nth-child(4) { animation-delay: .28s; }
+    .slide.active .anim > *:nth-child(5) { animation-delay: .36s; }
+    .slide.active .anim > *:nth-child(6) { animation-delay: .44s; }
+    .slide.active .anim > *:nth-child(7) { animation-delay: .52s; }
+    .slide.active .anim > *:nth-child(8) { animation-delay: .6s; }
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="grid-bg" aria-hidden="true"></div>
+
+  <div class="help" aria-hidden="true">
+    <kbd>&larr;</kbd> <kbd>&rarr;</kbd> переключение · <kbd>F</kbd> полноэкран · <kbd>P</kbd> печать/PDF · <kbd>T</kbd> таймер
+  </div>
+
+  <main class="deck" id="deck">
+
+    <!-- Slide 1: Cover -->
+    <section class="slide active" data-title="Обложка">
+      <div class="orb"></div>
+      <div class="orb b"></div>
+      <div class="slide-inner cover anim">
+        <span class="eyebrow"><span class="dot"></span>Финальный проект · АССИСТ+ · Модуль 09</span>
+        <div class="title-block">
+          <h1>Assist<span class="gradient-text">HQ</span><br />— второй мозг<br />предпринимателя.</h1>
+          <p class="lead">Telegram-ассистент, который снимает рутину с собственника: собирает входящие задачи голосом, ведёт контекст клиентов и сам пишет ответы — полностью собран в Cursor по стеку курса.</p>
+        </div>
+        <div class="signature">
+          <div class="avatar">ИК</div>
+          <div>
+            <div><strong style="color: var(--ink)">Кукава Илья</strong> · МАИ, Институт №8</div>
+            <div style="color: var(--ink-mute); font-size: 13px;">Курс «Cursor AI для бизнес-ассистентов» · защита проекта</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 2: Why I'm here -->
+    <section class="slide" data-title="Зачем я здесь">
+      <div class="slide-inner anim">
+        <span class="eyebrow"><span class="dot"></span>Контекст · 30 секунд обо мне</span>
+        <h2>Я пришёл на курс не «посмотреть»,<br />а <span class="gradient-text">собрать продукт</span>.</h2>
+        <div class="grid-3">
+          <div class="card">
+            <div class="kicker"><span class="num">01</span> КТО Я</div>
+            <h3>Студент МАИ, 2 курс</h3>
+            <p>Фундаментальная информатика. Работаю с Excel, SQL, Python (pandas, seaborn). Люблю превращать хаос в процессы.</p>
+          </div>
+          <div class="card">
+            <div class="kicker"><span class="num">02</span> ПОЧЕМУ CURSOR</div>
+            <h3>AI как коллега, а не как игрушка</h3>
+            <p>Интересуюсь анализом бизнес-процессов и автоматизацией. Cursor — самый короткий путь от идеи до рабочего прототипа.</p>
+          </div>
+          <div class="card">
+            <div class="kicker"><span class="num">03</span> ЦЕЛЬ</div>
+            <h3>Попасть в команду АССИСТ+</h3>
+            <p>Этот проект — моя заявка. Не учебный «пример», а каркас продукта для предпринимателей, который можно развивать дальше.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 3: Problem -->
+    <section class="slide" data-title="Проблема">
+      <div class="slide-inner anim">
+        <span class="eyebrow"><span class="dot"></span>Проблема · с чем живёт собственник</span>
+        <div class="grid-2">
+          <div class="stack">
+            <h2>У малого бизнеса<br />нет <span class="warn-text">«второго мозга»</span>.</h2>
+            <p class="lead">Собственник — это менеджер, маркетолог, HR и поддержка одновременно. В день — 200+ сообщений, 10 каналов, 0 структуры.</p>
+            <div class="row">
+              <span class="pill pink">Каждая задача теряется</span>
+              <span class="pill warn">Контекст в голове одного человека</span>
+              <span class="pill">Рутина ≠ рост</span>
+            </div>
+          </div>
+          <div class="card">
+            <div class="kicker"><span class="num">Будни</span> ДЕНЬ ПРЕДПРИНИМАТЕЛЯ</div>
+            <ul class="chaos-list">
+              <li>Telegram, WhatsApp, почта, Instagram, звонки</li>
+              <li>Голосовые по 5 минут от клиентов и сотрудников</li>
+              <li>«Напомни мне завтра» — и никто не напоминает</li>
+              <li>Отчёты собираются руками в Excel</li>
+              <li>Одну и ту же цену повторяешь 30 раз в день</li>
+              <li>Договорённости теряются в переписке</li>
+              <li>Новый сотрудник = снова рассказать «как у нас принято»</li>
+              <li>Вечер = выгорание, а не планирование</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 4: Solution -->
+    <section class="slide" data-title="Решение">
+      <div class="slide-inner anim">
+        <span class="eyebrow"><span class="dot"></span>Решение</span>
+        <h2>AssistHQ — <span class="gradient-text">один Telegram-бот</span>,<br />который заменяет стажёра без выгорания.</h2>
+        <p class="lead">Пересылаешь в бота любое сообщение, голосовое или задачу — он расшифровывает, классифицирует, добавляет в базу знаний, готовит ответ и ставит напоминание. Контекст живёт в файлах, а не в голове.</p>
+        <div class="flow">
+          <div class="step">
+            <div class="n">01</div>
+            <h5>Вход</h5>
+            <p>Голос, текст, пересылка из чатов</p>
+          </div>
+          <div class="arrow">→</div>
+          <div class="step">
+            <div class="n">02</div>
+            <h5>Расшифровка</h5>
+            <p>Whisper API + очистка текста</p>
+          </div>
+          <div class="arrow">→</div>
+          <div class="step">
+            <div class="n">03</div>
+            <h5>Агент-диспетчер</h5>
+            <p>Определяет тип: задача, клиент, идея</p>
+          </div>
+        </div>
+        <div class="flow">
+          <div class="step">
+            <div class="n">04</div>
+            <h5>База знаний</h5>
+            <p>Обновляет .md файлы контекста</p>
+          </div>
+          <div class="arrow">→</div>
+          <div class="step">
+            <div class="n">05</div>
+            <h5>Действие</h5>
+            <p>Google Sheets, напоминание, черновик ответа</p>
+          </div>
+          <div class="arrow">→</div>
+          <div class="step">
+            <div class="n">06</div>
+            <h5>Отчёт дня</h5>
+            <p>Краткая сводка вечером в Telegram</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 5: Architecture -->
+    <section class="slide" data-title="Архитектура">
+      <div class="slide-inner anim">
+        <span class="eyebrow"><span class="dot"></span>Под капотом</span>
+        <h2>Архитектура — <span class="gradient-text">модульная</span>,<br />каждая часть учит курс.</h2>
+        <div class="arch">
+          <div class="node">
+            <div class="stripe"></div>
+            <div class="tag">Модуль 02 · Контекст</div>
+            <h4>Brain</h4>
+            <p>Папка <code>/context</code> с .md файлами: бизнес, клиенты, тональность, FAQ. Правила в <code>.mdc</code> задают поведение всех агентов.</p>
+          </div>
+          <div class="node alt">
+            <div class="stripe"></div>
+            <div class="tag">Модуль 04 · Агенты</div>
+            <h4>Brains</h4>
+            <p>Агенты-сотрудники: <code>Диспетчер</code>, <code>Клиентщик</code>, <code>Аналитик</code>, <code>Писатель</code> — каждый со своими границами ответственности.</p>
+          </div>
+          <div class="node alt3">
+            <div class="stripe"></div>
+            <div class="tag">Модуль 05 · Telegram</div>
+            <h4>Interface</h4>
+            <p>Python + aiogram. Принимает текст, голос, файлы. Отдаёт ответы, кнопки быстрых действий, ежедневный дайджест.</p>
+          </div>
+          <div class="node">
+            <div class="stripe"></div>
+            <div class="tag">Модуль 06 · API</div>
+            <h4>Hands</h4>
+            <p>OpenAI API (LLM + Whisper), Google Sheets API, Notion webhooks. Бот сам ходит и обновляет внешние системы.</p>
+          </div>
+        </div>
+        <div class="row">
+          <span class="pill">Python 3.11</span>
+          <span class="pill">aiogram 3</span>
+          <span class="pill">OpenAI + Whisper</span>
+          <span class="pill green">Google Sheets</span>
+          <span class="pill green">Cursor Rules / .mdc</span>
+          <span class="pill warn">Docker · деплой на VPS</span>
+          <span class="pill pink">GitHub Actions CI</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 6: Demo scenarios -->
+    <section class="slide" data-title="Сценарии">
+      <div class="slide-inner anim">
+        <span class="eyebrow"><span class="dot"></span>Как это выглядит в жизни</span>
+        <h2>Три сценария из дня собственника.</h2>
+        <div class="grid-3">
+          <div class="card">
+            <div class="kicker"><span class="num">Кейс 01</span> КЛИЕНТ ПРИСЛАЛ ГОЛОСОВОЕ</div>
+            <h3>«Расшифруй и не потеряй»</h3>
+            <p>Пересылаю в AssistHQ голосовое от клиента на 3 минуты. Получаю: расшифровку, выжимку «что хочет», карточку клиента в Sheets и черновик ответа в моём тоне.</p>
+            <div class="row" style="margin-top: 10px;">
+              <span class="pill green">−12 минут</span>
+              <span class="pill">0 пропущенных задач</span>
+            </div>
+          </div>
+          <div class="card">
+            <div class="kicker"><span class="num">Кейс 02</span> «ПОВТОРИ ТО ЖЕ САМОЕ 30 РАЗ»</div>
+            <h3>FAQ-автопилот</h3>
+            <p>База знаний собирается из реальных переписок. Новый вопрос → бот предлагает ответ на основе контекста бизнеса. Правлю одним нажатием — обучение идёт само.</p>
+            <div class="row" style="margin-top: 10px;">
+              <span class="pill green">−70% однотипных ответов</span>
+              <span class="pill">Единый tone of voice</span>
+            </div>
+          </div>
+          <div class="card">
+            <div class="kicker"><span class="num">Кейс 03</span> ВЕЧЕРНИЙ ДАЙДЖЕСТ</div>
+            <h3>«День на одном экране»</h3>
+            <p>В 21:00 AssistHQ присылает сводку: что сделано, что висит, горячие клиенты, идеи, которые я кинул ему днём. Без открытия 10 вкладок.</p>
+            <div class="row" style="margin-top: 10px;">
+              <span class="pill green">Ясность за 60 секунд</span>
+              <span class="pill">Спишь спокойно</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 7: Value / economy -->
+    <section class="slide" data-title="Экономия">
+      <div class="slide-inner anim">
+        <span class="eyebrow"><span class="dot"></span>Польза в цифрах</span>
+        <h2>AI здесь не ради «вау».<br />Он <span class="gradient-text">возвращает время и деньги</span>.</h2>
+        <div class="grid-4">
+          <div class="card">
+            <div class="kpi">~2 ч</div>
+            <div class="kpi-sub">в день на собственника — рутина по переписке и задачам</div>
+          </div>
+          <div class="card">
+            <div class="kpi alt">40+ ч</div>
+            <div class="kpi-sub">в месяц экономии одного человека по моим замерам на трёх сценариях</div>
+          </div>
+          <div class="card">
+            <div class="kpi alt3">≈ 60 ₽</div>
+            <div class="kpi-sub">себестоимость обработки 100 сообщений через GPT + Whisper</div>
+          </div>
+          <div class="card">
+            <div class="kpi">×0</div>
+            <div class="kpi-sub">найма младшего ассистента за 40 000 ₽/мес — бот делает больше</div>
+          </div>
+        </div>
+        <div class="quote-card">
+          <p>Экономия — не просто «сэкономил время». Это время собственника, в котором рождается новый продукт. Именно этим живёт АССИСТ+: дать предпринимателю вернуть себе час в день — и бот окупается за неделю.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 8: Modules map -->
+    <section class="slide" data-title="Стек курса">
+      <div class="slide-inner anim">
+        <span class="eyebrow"><span class="dot"></span>Как проект собран из модулей</span>
+        <h2>9 модулей → <span class="gradient-text">1 рабочий продукт</span>.</h2>
+        <p>Ни один модуль не остался теорией. Каждый оставил конкретный артефакт в репозитории.</p>
+        <div class="modules">
+          <div class="module">
+            <div class="mno">M00 · ОНБОРДИНГ</div>
+            <h5>Настроенная среда</h5>
+            <p>Cursor, модели, токены, Git, привычка коммитить по шагам.</p>
+            <div class="dot-row"><span class="on"></span><span></span><span></span></div>
+          </div>
+          <div class="module">
+            <div class="mno">M01 · СТАРТ</div>
+            <h5>Первый прототип</h5>
+            <p>Скелет бота и репозитория собран за вечер через Cursor.</p>
+            <div class="dot-row"><span class="on"></span><span class="on"></span><span></span></div>
+          </div>
+          <div class="module">
+            <div class="mno">M02 · КОНТЕКСТ</div>
+            <h5>Brain проекта</h5>
+            <p>Система папок <code>/context</code>, .mdc правила, «память» AI.</p>
+            <div class="dot-row"><span class="on"></span><span class="on"></span><span class="on"></span></div>
+          </div>
+          <div class="module">
+            <div class="mno">M03 · ИНСТРУМЕНТЫ</div>
+            <h5>Профи-процесс</h5>
+            <p>Терминал, Git, горячие клавиши, GitHub — скорость ×3.</p>
+            <div class="dot-row"><span class="on"></span><span class="on"></span><span></span></div>
+          </div>
+          <div class="module">
+            <div class="mno">M04 · АГЕНТЫ</div>
+            <h5>AI-сотрудники</h5>
+            <p>Диспетчер, клиентщик, аналитик, писатель — у каждого роль.</p>
+            <div class="dot-row"><span class="on"></span><span class="on"></span><span class="on"></span></div>
+          </div>
+          <div class="module">
+            <div class="mno">M05 · TELEGRAM</div>
+            <h5>Точка входа</h5>
+            <p>aiogram, webhooks, голосовые, инлайн-кнопки, деплой.</p>
+            <div class="dot-row"><span class="on"></span><span class="on"></span><span class="on"></span></div>
+          </div>
+          <div class="module">
+            <div class="mno">M06 · API</div>
+            <h5>Связи с миром</h5>
+            <p>OpenAI, Whisper, Google Sheets — бот ходит и обновляет.</p>
+            <div class="dot-row"><span class="on"></span><span class="on"></span><span class="on"></span></div>
+          </div>
+          <div class="module">
+            <div class="mno">M07 · ВАЙБ-КОДИНГ</div>
+            <h5>Лендинг + дашборд</h5>
+            <p>Страница продукта и веб-дашборд аналитики за вечер.</p>
+            <div class="dot-row"><span class="on"></span><span class="on"></span><span></span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 9: Timeline -->
+    <section class="slide" data-title="Как это строилось">
+      <div class="slide-inner anim">
+        <span class="eyebrow"><span class="dot"></span>Сколько времени ушло</span>
+        <h2>Весь проект — <span class="gradient-text">≈ 38 часов</span>.<br />Без AI это были бы недели.</h2>
+        <div class="timeline">
+          <div class="tl-item">
+            <div class="marker"></div>
+            <div class="when">НЕД. 1 · 6 ч</div>
+            <h5>Идея и контекст</h5>
+            <p>Описал «идеального клиента», бизнес-домен и tone of voice в .md. Это заняло больше времени, чем код.</p>
+          </div>
+          <div class="tl-item">
+            <div class="marker"></div>
+            <div class="when">НЕД. 2 · 10 ч</div>
+            <h5>Каркас и агенты</h5>
+            <p>Собрал 4 агента через .mdc, прототип на aiogram, первый запуск в личном чате.</p>
+          </div>
+          <div class="tl-item">
+            <div class="marker"></div>
+            <div class="when">НЕД. 3 · 9 ч</div>
+            <h5>API и интеграции</h5>
+            <p>Whisper, Sheets, напоминания. Научил бота писать вечерний дайджест.</p>
+          </div>
+          <div class="tl-item">
+            <div class="marker"></div>
+            <div class="when">НЕД. 4 · 8 ч</div>
+            <h5>Полировка и деплой</h5>
+            <p>Docker, VPS, логи, безопасность токенов. Тесты на реальных голосовых.</p>
+          </div>
+          <div class="tl-item">
+            <div class="marker"></div>
+            <div class="when">НЕД. 5 · 5 ч</div>
+            <h5>Упаковка</h5>
+            <p>Лендинг, README, демо-сценарии, эта презентация (собрана в Cursor).</p>
+          </div>
+        </div>
+        <div class="row">
+          <span class="pill green">×6 ускорение vs ручной путь</span>
+          <span class="pill">0 строк кода без review в Cursor</span>
+          <span class="pill warn">18 осознанных коммитов</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 10: Roadmap -->
+    <section class="slide" data-title="Развитие">
+      <div class="slide-inner anim">
+        <span class="eyebrow"><span class="dot"></span>Куда развивать дальше</span>
+        <h2>Roadmap: от личного бота<br />к <span class="gradient-text">SaaS для предпринимателей</span>.</h2>
+        <div class="roadmap">
+          <div class="rm">
+            <div class="horizon">Горизонт 01 · ближайшее</div>
+            <h4>Мультиагентный режим</h4>
+            <ul>
+              <li>Онбординг предпринимателя за 10 минут</li>
+              <li>CRM-карточки клиентов с авто-обогащением</li>
+              <li>Голосовые заметки → задачи в Notion</li>
+              <li>Аналитика в дашборде (модуль 07)</li>
+            </ul>
+          </div>
+          <div class="rm">
+            <div class="horizon">Горизонт 02 · продукт</div>
+            <h4>B2B-версия для АССИСТ+</h4>
+            <ul>
+              <li>Мульти-тенант: один бот — много клиентов</li>
+              <li>Маркетплейс агентов под ниши</li>
+              <li>Биллинг и тарифы, лимиты токенов</li>
+              <li>Интеграция с amoCRM и Bitrix</li>
+            </ul>
+          </div>
+          <div class="rm">
+            <div class="horizon">Горизонт 03 · масштаб</div>
+            <h4>Платформа бизнес-ассистентов</h4>
+            <ul>
+              <li>Маркет готовых .mdc ролей от выпускников</li>
+              <li>Голосовой инбокс как отдельный продукт</li>
+              <li>Мобильное приложение-компаньон</li>
+              <li>Партнёрства с образовательными продуктами</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 11: Takeaways -->
+    <section class="slide" data-title="Что забрал с курса">
+      <div class="slide-inner anim">
+        <span class="eyebrow"><span class="dot"></span>Что забрал с курса и куда расту</span>
+        <div class="grid-2">
+          <div class="stack">
+            <h2>Главное — мышление,<br />а не инструменты.</h2>
+            <p class="lead">Cursor — это только редактор. Курс переключил у меня в голове «писать код» на «ставить задачу и управлять AI как командой». Это применимо далеко за пределами программирования.</p>
+            <div class="row">
+              <span class="pill">Контекст &gt; промпт</span>
+              <span class="pill green">Структура &gt; скорость</span>
+              <span class="pill warn">Маленькие шаги &gt; большие планы</span>
+            </div>
+          </div>
+          <div class="takeaways">
+            <div class="take">
+              <div class="t">Забрал</div>
+              <h5>Рабочий мета-скилл</h5>
+              <p>Умение разбивать задачу на агентов и контекст, а не на функции.</p>
+            </div>
+            <div class="take">
+              <div class="t">Забрал</div>
+              <h5>Процесс профи</h5>
+              <p>Git-дисциплина, маленькие коммиты, CI — это теперь автомат.</p>
+            </div>
+            <div class="take">
+              <div class="t">Расту</div>
+              <h5>Продуктовое мышление</h5>
+              <p>Иду в бизнес-анализ + AI-продукты: МАИ + практика АССИСТ+.</p>
+            </div>
+            <div class="take">
+              <div class="t">Расту</div>
+              <h5>Углубляю стек</h5>
+              <p>LangGraph, RAG, голосовые агенты, evals — уже в планах.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 12: Ask / Contacts -->
+    <section class="slide" data-title="Оффер">
+      <div class="slide-inner anim">
+        <span class="eyebrow"><span class="dot"></span>Мой оффер команде АССИСТ+</span>
+        <div class="cta">
+          <div class="cta-main">
+            <h2>Я хочу <span class="gradient-text">не аттестат —<br />а место в команде</span>.</h2>
+            <p class="lead" style="margin-top: 14px;">AssistHQ — это не игрушка «для защиты». Это прототип продукта, который решает ту же боль, на которую целится АССИСТ+. Готов приносить его, дорабатывать вместе с вами и учиться у команды быстрее, чем любой курс.</p>
+            <div class="row" style="margin-top: 18px;">
+              <span class="pill green">Готов к стажировке</span>
+              <span class="pill">Гибко по задачам</span>
+              <span class="pill warn">Проект можно смотреть и щупать</span>
+            </div>
+          </div>
+          <div class="contacts-box">
+            <h3 style="color: var(--ink);">Связь</h3>
+            <div class="contact-row">
+              <div class="ic">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+              </div>
+              <div>
+                <div style="color: var(--ink-mute); font-size: 12px;">Email</div>
+                <a href="mailto:iliakukava50@gmail.com">iliakukava50@gmail.com</a>
+              </div>
+            </div>
+            <div class="contact-row">
+              <div class="ic">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              </div>
+              <div>
+                <div style="color: var(--ink-mute); font-size: 12px;">Telegram</div>
+                <a href="https://t.me/lilihkqw" target="_blank" rel="noopener noreferrer">@lilihkqw</a>
+              </div>
+            </div>
+            <div class="contact-row">
+              <div class="ic">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3 7h7l-5.5 4.5L18 21l-6-4-6 4 1.5-7.5L2 9h7z"/></svg>
+              </div>
+              <div>
+                <div style="color: var(--ink-mute); font-size: 12px;">Сейчас</div>
+                <span>МАИ, 2 курс · открыт к стажировке</span>
+              </div>
+            </div>
+            <div class="contact-row" style="margin-top: 6px; color: var(--ink-dim); font-size: 13px;">
+              Спасибо АССИСТ+ за курс.<br />Давайте строить продукт вместе.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Chrome -->
+  <div class="chrome-top" aria-hidden="true"><div class="bar" id="progressBar"></div></div>
+  <div class="chrome-bottom">
+    <div class="brand-mark">
+      <div class="logo">A+</div>
+      <span>AssistHQ · финальный проект · Кукава Илья</span>
+    </div>
+    <div class="nav" role="navigation" aria-label="Навигация по слайдам">
+      <button id="prev" title="Назад (←)" aria-label="Назад">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <span class="counter" id="counter">01 / 12</span>
+      <button id="next" title="Вперёд (→)" aria-label="Вперёд">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+    </div>
+    <div class="timer" id="timer" title="Таймер спикера — 5:00 до зелёной зоны, 7:00 до предела">
+      <span class="led"></span>
+      <span id="timerText">00:00</span>
+      <button id="timerToggle">старт</button>
+      <button id="timerReset">сброс</button>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const slides = Array.from(document.querySelectorAll('.slide'));
+      const total = slides.length;
+      let current = 0;
+
+      const bar = document.getElementById('progressBar');
+      const counter = document.getElementById('counter');
+      const prevBtn = document.getElementById('prev');
+      const nextBtn = document.getElementById('next');
+
+      function pad(n) { return n < 10 ? '0' + n : '' + n; }
+
+      function go(index) {
+        index = Math.max(0, Math.min(total - 1, index));
+        if (index === current) return;
+        slides[current].classList.remove('active');
+        slides[index].classList.add('active');
+        current = index;
+        update();
+      }
+
+      function update() {
+        bar.style.width = ((current + 1) / total * 100) + '%';
+        counter.textContent = pad(current + 1) + ' / ' + pad(total);
+        document.title = slides[current].dataset.title + ' · AssistHQ';
+      }
+
+      prevBtn.addEventListener('click', () => go(current - 1));
+      nextBtn.addEventListener('click', () => go(current + 1));
+
+      document.addEventListener('keydown', (e) => {
+        const tag = (e.target && e.target.tagName) || '';
+        if (/input|textarea/i.test(tag)) return;
+
+        switch (e.key) {
+          case 'ArrowRight':
+          case 'PageDown':
+          case ' ':
+            e.preventDefault();
+            go(current + 1);
+            break;
+          case 'ArrowLeft':
+          case 'PageUp':
+            e.preventDefault();
+            go(current - 1);
+            break;
+          case 'Home':
+            go(0); break;
+          case 'End':
+            go(total - 1); break;
+          case 'f':
+          case 'F':
+            if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(() => {});
+            else document.exitFullscreen();
+            break;
+          case 'p':
+          case 'P':
+            window.print(); break;
+          case 't':
+          case 'T':
+            document.getElementById('timerToggle').click(); break;
+        }
+      });
+
+      let touchStart = null;
+      document.addEventListener('touchstart', (e) => { touchStart = e.touches[0].clientX; }, { passive: true });
+      document.addEventListener('touchend', (e) => {
+        if (touchStart === null) return;
+        const dx = e.changedTouches[0].clientX - touchStart;
+        if (Math.abs(dx) > 50) go(current + (dx < 0 ? 1 : -1));
+        touchStart = null;
+      });
+
+      update();
+
+      // Speaker timer: green up to 5:00, amber up to 7:00, red after
+      const timerEl = document.getElementById('timer');
+      const timerText = document.getElementById('timerText');
+      const toggleBtn = document.getElementById('timerToggle');
+      const resetBtn = document.getElementById('timerReset');
+      let seconds = 0;
+      let interval = null;
+
+      function renderTimer() {
+        const m = Math.floor(seconds / 60);
+        const s = seconds % 60;
+        timerText.textContent = pad(m) + ':' + pad(s);
+        timerEl.classList.remove('running', 'over');
+        if (interval) timerEl.classList.add('running');
+        if (seconds >= 7 * 60) timerEl.classList.add('over');
+      }
+
+      toggleBtn.addEventListener('click', () => {
+        if (interval) {
+          clearInterval(interval); interval = null;
+          toggleBtn.textContent = 'старт';
+        } else {
+          interval = setInterval(() => { seconds += 1; renderTimer(); }, 1000);
+          toggleBtn.textContent = 'пауза';
+        }
+        renderTimer();
+      });
+      resetBtn.addEventListener('click', () => {
+        clearInterval(interval); interval = null;
+        seconds = 0;
+        toggleBtn.textContent = 'старт';
+        renderTimer();
+      });
+      renderTimer();
+    })();
+  </script>
+</body>
+</html>
