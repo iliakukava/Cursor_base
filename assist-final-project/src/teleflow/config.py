@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import os
 from pathlib import Path
 
@@ -78,6 +79,29 @@ def _parse_theme_dirs(raw: str | None) -> dict[str, str]:
         if source and target:
             mapping[source] = target
     return mapping
+
+
+def _parse_write_styles() -> dict[str, str]:
+    path_raw = os.getenv("WRITE_STYLES_PATH", "").strip()
+    payload_raw = os.getenv("WRITE_STYLES_JSON", "").strip()
+    data: object = {}
+
+    if path_raw:
+        path = Path(path_raw)
+        data = json.loads(path.read_text(encoding="utf-8"))
+    elif payload_raw:
+        data = json.loads(payload_raw)
+
+    if not isinstance(data, dict):
+        raise ValueError("WRITE_STYLES_JSON/WRITE_STYLES_PATH должен содержать JSON-объект.")
+
+    styles: dict[str, str] = {}
+    for key, value in data.items():
+        key_norm = str(key).strip().lower()
+        value_norm = str(value).strip()
+        if key_norm and value_norm:
+            styles[key_norm] = value_norm
+    return styles
 
 
 def load_config() -> AppConfig:
@@ -172,8 +196,11 @@ def load_config() -> AppConfig:
         themes=themes,
         theme_dirs=_parse_theme_dirs(os.getenv("THEME_DIRS")),
         data_dir=os.getenv("DATA_DIR", "data").strip(),
+        dedupe_text_max_chars=_parse_positive_int("DEDUPE_TEXT_MAX_CHARS", 6000),
+        list_entries_limit=_parse_positive_int("LIST_ENTRIES_LIMIT", 10),
         write_max_files=_parse_int("WRITE_MAX_FILES", 20),
         write_max_total_chars=_parse_int("WRITE_MAX_TOTAL_CHARS", 12000),
+        write_styles=_parse_write_styles(),
         output_lang=os.getenv("OUTPUT_LANG", "ru").strip().lower(),
         collect_max_messages_per_channel=_parse_positive_int("COLLECT_MAX_MESSAGES_PER_CHANNEL", 300),
     )

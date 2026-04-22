@@ -10,7 +10,9 @@ from .openrouter import openrouter_chat
 LOGGER = logging.getLogger(__name__)
 
 
-def synthesize_post(config: AppConfig, theme: str, entries: list[dict[str, Any]]) -> str:
+def synthesize_post(
+    config: AppConfig, theme: str, entries: list[dict[str, Any]], style_key: str | None = None
+) -> str:
     selected = entries[: config.write_max_files]
     limited: list[dict[str, str]] = []
     total_chars = 0
@@ -31,7 +33,11 @@ def synthesize_post(config: AppConfig, theme: str, entries: list[dict[str, Any]]
     if not limited:
         return f"По теме '{theme}' нет текстовых материалов для генерации."
 
-    prompt = _build_prompt(theme, limited, config.output_lang)
+    style_overlay = ""
+    if style_key:
+        style_overlay = config.write_styles.get(style_key.lower(), "")
+
+    prompt = _build_prompt(theme, limited, config.output_lang, style_overlay)
     out = openrouter_chat(
         api_key=config.openrouter_api_key,
         model=config.openrouter_model,
@@ -50,7 +56,9 @@ def synthesize_post(config: AppConfig, theme: str, entries: list[dict[str, Any]]
     return _fallback_text(theme, limited)
 
 
-def _build_prompt(theme: str, items: list[dict[str, str]], output_lang: str) -> str:
+def _build_prompt(
+    theme: str, items: list[dict[str, str]], output_lang: str, style_overlay: str
+) -> str:
     instructions = (
         "Ты пишешь авторский Telegram-пост на основе подборки материалов. "
         "Синтезируй одну общую идею. Не пересказывай каждый источник по отдельности. "
@@ -58,10 +66,12 @@ def _build_prompt(theme: str, items: list[dict[str, str]], output_lang: str) -> 
         "Стиль: живой, цельный, без списков источников в конце."
     )
     lang_hint = "Пиши полностью на русском языке." if output_lang == "ru" else ""
+    style_hint = f"Дополнительный стиль:\n{style_overlay}\n" if style_overlay else ""
     payload = json.dumps(items, ensure_ascii=False)
     return (
         f"{instructions}\n{lang_hint}\n"
         f"Тема: {theme}\n"
+        f"{style_hint}"
         "Ниже материалы:\n"
         f"{payload}\n\n"
         "Верни только готовый текст поста."
