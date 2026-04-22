@@ -1,11 +1,16 @@
 /**
- * TeleFlow pitch deck: section nav, scroll-spy, keyboard, flow diagram pulse.
+ * TeleFlow · editorial deck
+ * Section nav, scroll-spy, keyboard, flow pulse, counter, roman rail.
  */
 (function () {
   const deck = document.getElementById("deck");
   const slides = deck ? Array.from(deck.querySelectorAll(".slide")) : [];
   const navList = document.querySelector(".deck-nav__list");
   const progressEl = document.getElementById("deck-progress");
+  const counterEl = document.getElementById("slide-counter");
+  const railNoEl = document.getElementById("rail-no");
+
+  const pad = (n) => (n < 10 ? "0" + n : "" + n);
 
   function buildNav() {
     if (!navList || slides.length === 0) return;
@@ -13,7 +18,7 @@
     slides.forEach((slide, i) => {
       const id = slide.id || `slide-${i}`;
       if (!slide.id) slide.id = id;
-      const title = slide.dataset.title || `Слайд ${i + 1}`;
+      const title = slide.dataset.title || `Slide ${i + 1}`;
       const li = document.createElement("li");
       const a = document.createElement("a");
       a.href = `#${id}`;
@@ -51,6 +56,17 @@
     links.forEach((a, i) => {
       a.classList.toggle("is-active", i === idx);
     });
+    const slide = slides[idx];
+    if (counterEl) {
+      counterEl.textContent = `${pad(idx + 1)}/${pad(slides.length)}`;
+    }
+    if (railNoEl && slide) {
+      railNoEl.textContent = slide.dataset.roman || String(idx + 1);
+    }
+    if (slide && slide.dataset.title) {
+      const section = slide.dataset.section ? ` · ${slide.dataset.section}` : "";
+      document.title = `${slide.dataset.title}${section} · TeleFlow`;
+    }
   }
 
   function scrollToIndex(delta) {
@@ -59,7 +75,6 @@
     slides[next].scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
-  /* IntersectionObserver: fade-in blocks */
   function initReveals() {
     const nodes = document.querySelectorAll(".reveal");
     if (!("IntersectionObserver" in window)) {
@@ -72,12 +87,11 @@
           if (en.isIntersecting) en.target.classList.add("is-visible");
         });
       },
-      { root: deck, threshold: 0.15, rootMargin: "0px 0px -8% 0px" }
+      { root: deck, threshold: 0.2, rootMargin: "0px 0px -8% 0px" }
     );
     nodes.forEach((n) => io.observe(n));
   }
 
-  /* Flow diagram: cycle highlight on #flow when visible */
   function initFlowHighlight() {
     const flowSlide = document.getElementById("flow");
     if (!flowSlide) return;
@@ -94,10 +108,11 @@
 
     function startLoop() {
       if (timer) return;
+      setStep(step);
       timer = window.setInterval(() => {
         step = (step + 1) % nodes.length;
         setStep(step);
-      }, 900);
+      }, 1100);
     }
 
     function stopLoop() {
@@ -120,30 +135,92 @@
           else stopLoop();
         });
       },
-      { root: deck, threshold: 0.25 }
+      { root: deck, threshold: 0.3 }
     );
     io.observe(flowSlide);
   }
 
+  /* -------- Keyboard -------- */
   document.addEventListener("keydown", (e) => {
     if (!deck || slides.length === 0) return;
     const t = e.target;
     if (t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.isContentEditable)) return;
+    if (e.altKey || e.ctrlKey || e.metaKey) return;
 
-    if (e.key === "ArrowDown" || e.key === "PageDown") {
-      e.preventDefault();
-      scrollToIndex(1);
-    } else if (e.key === "ArrowUp" || e.key === "PageUp") {
-      e.preventDefault();
-      scrollToIndex(-1);
-    } else if (e.key === "Home") {
-      e.preventDefault();
-      slides[0].scrollIntoView({ behavior: "smooth", block: "start" });
-    } else if (e.key === "End") {
-      e.preventDefault();
-      slides[slides.length - 1].scrollIntoView({ behavior: "smooth", block: "start" });
+    switch (e.key) {
+      case "ArrowDown":
+      case "ArrowRight":
+      case "PageDown":
+      case " ":
+        e.preventDefault();
+        scrollToIndex(1);
+        break;
+      case "ArrowUp":
+      case "ArrowLeft":
+      case "PageUp":
+        e.preventDefault();
+        scrollToIndex(-1);
+        break;
+      case "Home":
+        e.preventDefault();
+        slides[0].scrollIntoView({ behavior: "smooth", block: "start" });
+        break;
+      case "End":
+        e.preventDefault();
+        slides[slides.length - 1].scrollIntoView({ behavior: "smooth", block: "start" });
+        break;
+      case "f":
+      case "F":
+      case "а":
+      case "А":
+        e.preventDefault();
+        if (!document.fullscreenElement) {
+          document.documentElement.requestFullscreen().catch(() => {});
+        } else {
+          document.exitFullscreen().catch(() => {});
+        }
+        break;
+      case "p":
+      case "P":
+      case "з":
+      case "З":
+        e.preventDefault();
+        window.print();
+        break;
+      default:
+        break;
     }
   });
+
+  /* -------- Touch swipes -------- */
+  let touchStartY = null;
+  let touchStartX = null;
+  deck.addEventListener(
+    "touchstart",
+    (e) => {
+      if (e.touches && e.touches[0]) {
+        touchStartY = e.touches[0].clientY;
+        touchStartX = e.touches[0].clientX;
+      }
+    },
+    { passive: true }
+  );
+  deck.addEventListener(
+    "touchend",
+    (e) => {
+      if (touchStartY === null || touchStartX === null) return;
+      const endTouch = (e.changedTouches && e.changedTouches[0]) || null;
+      if (!endTouch) return;
+      const dy = endTouch.clientY - touchStartY;
+      const dx = endTouch.clientX - touchStartX;
+      if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy)) {
+        scrollToIndex(dx < 0 ? 1 : -1);
+      }
+      touchStartY = null;
+      touchStartX = null;
+    },
+    { passive: true }
+  );
 
   function updateDeckProgress() {
     if (!deck || !progressEl) return;
