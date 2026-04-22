@@ -1,6 +1,18 @@
 # Презентация TeleFlow (статический сайт)
 
-Папка: только **HTML + CSS + JS**, без сборки и npm.
+Папка: **HTML + CSS + JS**. На **титульном слайде** справа подгружается только Spline-сцена из `spline-app/spline-only.html` (лёгкий iframe; полное React-демо по-прежнему в `spline-app/index.html`).
+
+## Сборка 3D-слайда (один раз и после правок React)
+
+Из корня репозитория `assist-final-project`:
+
+```powershell
+cd presentation-react
+npm install
+npm run build
+```
+
+Артефакты попадут в `presentation/spline-app/`. Без этой папки iframe на слайде «3D» будет пустым.
 
 ## Как открыть
 

@@ -12,8 +12,14 @@
     />
     <link rel="stylesheet" href="style.css" />
   </head>
-  <body>
+  <body class="theme-spline">
     <a class="skip-link" href="#cover">К содержанию</a>
+    <div class="spline-bg" aria-hidden="true">
+      <span class="spline-orb spline-orb--a"></span>
+      <span class="spline-orb spline-orb--b"></span>
+      <span class="spline-orb spline-orb--c"></span>
+      <span class="spline-noise"></span>
+    </div>
     <div
       class="deck-progress"
       id="deck-progress"
@@ -29,14 +35,26 @@
     </nav>
 
     <main class="deck" id="deck">
-      <section class="slide slide--hero" id="cover" data-title="Титул">
-        <div class="slide__inner reveal">
-          <p class="eyebrow">Итоговый проект · MVP</p>
-          <h1 class="slide__title">TeleFlow</h1>
-          <p class="slide__lead">
-            Дайджесты, тематическая база и черновики постов из Telegram — с
-            <span class="accent">LLM</span> и под вашим контролем.
-          </p>
+      <section class="slide slide--hero slide--hero-split" id="cover" data-title="Титул">
+        <div class="hero-split">
+          <div class="hero-split__panel reveal">
+            <div class="hero-split__text">
+              <p class="eyebrow">Итоговый проект · MVP</p>
+              <h1 class="slide__title">TeleFlow</h1>
+              <p class="slide__lead">
+                Дайджесты, тематическая база и черновики постов из Telegram — с
+                <span class="accent">LLM</span> и под вашим контролем.
+              </p>
+            </div>
+            <div class="hero-split__spline" aria-hidden="true">
+              <iframe
+                class="hero-split__iframe"
+                src="spline-app/spline-only.html"
+                title="Spline: интерактивная 3D-сцена"
+                loading="eager"
+              ></iframe>
+            </div>
+          </div>
         </div>
         <p class="hint">Прокрутка или стрелки ↑ ↓ · <kbd>Home</kbd> / <kbd>End</kbd></p>
       </section>
