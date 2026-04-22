@@ -1,5 +1,6 @@
 /**
- * TeleFlow pitch deck: section nav, scroll-spy, keyboard, flow diagram pulse, slide counter.
+ * TeleFlow · editorial deck
+ * Section nav, scroll-spy, keyboard, flow pulse, counter, roman rail.
  */
 (function () {
   const deck = document.getElementById("deck");
@@ -7,6 +8,7 @@
   const navList = document.querySelector(".deck-nav__list");
   const progressEl = document.getElementById("deck-progress");
   const counterEl = document.getElementById("slide-counter");
+  const railNoEl = document.getElementById("rail-no");
 
   const pad = (n) => (n < 10 ? "0" + n : "" + n);
 
@@ -16,7 +18,7 @@
     slides.forEach((slide, i) => {
       const id = slide.id || `slide-${i}`;
       if (!slide.id) slide.id = id;
-      const title = slide.dataset.title || `Слайд ${i + 1}`;
+      const title = slide.dataset.title || `Slide ${i + 1}`;
       const li = document.createElement("li");
       const a = document.createElement("a");
       a.href = `#${id}`;
@@ -54,12 +56,16 @@
     links.forEach((a, i) => {
       a.classList.toggle("is-active", i === idx);
     });
-    if (counterEl) {
-      counterEl.textContent = `${pad(idx + 1)} / ${pad(slides.length)}`;
-    }
     const slide = slides[idx];
+    if (counterEl) {
+      counterEl.textContent = `${pad(idx + 1)}/${pad(slides.length)}`;
+    }
+    if (railNoEl && slide) {
+      railNoEl.textContent = slide.dataset.roman || String(idx + 1);
+    }
     if (slide && slide.dataset.title) {
-      document.title = `${slide.dataset.title} · TeleFlow`;
+      const section = slide.dataset.section ? ` · ${slide.dataset.section}` : "";
+      document.title = `${slide.dataset.title}${section} · TeleFlow`;
     }
   }
 
@@ -81,7 +87,7 @@
           if (en.isIntersecting) en.target.classList.add("is-visible");
         });
       },
-      { root: deck, threshold: 0.15, rootMargin: "0px 0px -8% 0px" }
+      { root: deck, threshold: 0.2, rootMargin: "0px 0px -8% 0px" }
     );
     nodes.forEach((n) => io.observe(n));
   }
@@ -102,10 +108,11 @@
 
     function startLoop() {
       if (timer) return;
+      setStep(step);
       timer = window.setInterval(() => {
         step = (step + 1) % nodes.length;
         setStep(step);
-      }, 900);
+      }, 1100);
     }
 
     function stopLoop() {
@@ -128,7 +135,7 @@
           else stopLoop();
         });
       },
-      { root: deck, threshold: 0.25 }
+      { root: deck, threshold: 0.3 }
     );
     io.observe(flowSlide);
   }

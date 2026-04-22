@@ -3,18 +3,26 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>TeleFlow — питч · АССИСТ+</title>
-    <meta name="description" content="TeleFlow — Telegram userbot с LLM-дайджестом и синтезом постов. Финальный проект курса «Cursor AI для бизнес-ассистентов»." />
+    <title>TeleFlow — Dossier № 01 · АССИСТ+</title>
+    <meta name="description" content="TeleFlow — Telegram-userbot для дайджеста, тематической базы и авторских постов. Финальный проект курса «Cursor AI для бизнес-ассистентов»." />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;600&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
     <a class="skip-link" href="#cover">К содержанию</a>
+
+    <!-- Left rail -->
+    <aside class="rail" aria-hidden="true">
+      <div class="rail__brand">TELEFLOW<span>//</span>DOSSIER</div>
+      <div class="rail__no" id="rail-no">I</div>
+    </aside>
+
+    <!-- Progress bar -->
     <div
       class="deck-progress"
       id="deck-progress"
@@ -25,330 +33,695 @@
       aria-label="Прогресс по слайдам"
     ></div>
 
-    <nav class="deck-nav" aria-label="Разделы презентации">
+    <!-- Slide counter -->
+    <aside class="speaker-bar" aria-label="Счётчик слайдов">
+      <span class="speaker-bar__label">slide</span>
+      <span class="speaker-bar__counter" id="slide-counter">01/12</span>
+    </aside>
+
+    <!-- Side nav -->
+    <nav class="deck-nav" aria-label="Навигация">
       <ul class="deck-nav__list"></ul>
     </nav>
 
-    <!-- Slide counter -->
-    <aside class="speaker-bar" aria-label="Панель спикера">
-      <div class="speaker-bar__group" title="Номер текущего слайда">
-        <span class="speaker-bar__label">slide</span>
-        <span class="speaker-bar__counter" id="slide-counter">01 / 12</span>
-      </div>
-    </aside>
-
     <main class="deck" id="deck">
-      <!-- 1. Cover -->
-      <section class="slide slide--hero" id="cover" data-title="Титул">
-        <div class="slide__inner reveal">
-          <p class="eyebrow">Финальный проект · курс АССИСТ+ · Cursor AI для бизнес-ассистентов</p>
-          <h1 class="slide__title">TeleFlow</h1>
-          <p class="slide__lead">
-            Второй мозг для Telegram: дайджесты, тематическая база и черновики постов —
-            с <span class="accent">LLM</span>, под твоим контролем.
-          </p>
+      <!-- ============================================================
+           01 — COVER
+           ============================================================ -->
+      <section
+        class="slide slide-cover"
+        id="cover"
+        data-title="Cover"
+        data-section="Prologue"
+        data-roman="I"
+      >
+        <div class="slide__meta" aria-hidden="true">
+          <span class="slide__meta__no">№ 01 · Prologue</span>
+          <span class="sep"></span>
+          <span class="slide__meta__kicker">Финал · АССИСТ+</span>
         </div>
-        <p class="hint">Прокрутка или стрелки <kbd>↓</kbd>/<kbd>→</kbd> · <kbd>F</kbd> — полноэкран · <kbd>P</kbd> — PDF</p>
+        <div class="slide__inner reveal">
+          <div class="cover-head">
+            <div class="cover-eyebrow">ФИНАЛЬНЫЙ ПРОЕКТ · CURSOR AI ДЛЯ БИЗНЕС-АССИСТЕНТОВ</div>
+            <h1 class="cover-title">
+              <span>Tele</span>
+              <span class="accented">Flow.</span>
+            </h1>
+            <p class="cover-lead">
+              Userbot, который возвращает час в день — собирает дайджест Telegram,
+              ведёт тематическую базу и пишет черновики постов за автора.
+            </p>
+          </div>
+          <dl class="cover-aside">
+            <div>
+              <dt>Стек</dt>
+              <dd>Telethon · OpenRouter · SQLite · JSON</dd>
+            </div>
+            <div>
+              <dt>Команды</dt>
+              <dd><strong>8</strong> · включая микро-CRUD над базой</dd>
+            </div>
+            <div>
+              <dt>Код</dt>
+              <dd>15 модулей · <strong>~1.5k</strong> строк Python</dd>
+            </div>
+            <div>
+              <dt>Статус</dt>
+              <dd><span class="aqua">MVP в работе</span></dd>
+            </div>
+          </dl>
+        </div>
+        <p class="hint"><kbd>↓</kbd> <kbd>→</kbd> <kbd>Space</kbd> — дальше · <kbd>F</kbd> — full screen</p>
       </section>
 
-      <!-- 2. Problem -->
-      <section class="slide" id="problem" data-title="Проблема">
+      <!-- ============================================================
+           02 — PROBLEM
+           ============================================================ -->
+      <section
+        class="slide slide-problem"
+        id="problem"
+        data-title="Problem"
+        data-section="Context"
+        data-roman="II"
+      >
+        <div class="slide__meta" aria-hidden="true">
+          <span class="slide__meta__no">№ 02 · Context</span>
+          <span class="sep"></span>
+          <span class="slide__meta__kicker">Что болит</span>
+        </div>
         <div class="slide__inner reveal">
-          <p class="eyebrow">боль</p>
-          <h2>У авторов и владельцев контента нет второго мозга.</h2>
-          <p class="slide__text">
-            В Telegram — десятки каналов и папок. Непрочитанного копится по 200+ постов в день,
-            важное тонет в шуме, а на ручную выжимку и черновики уходит <strong>час-полтора
-            ежедневно</strong>.
-          </p>
-          <ul class="chip-row">
-            <li class="chip chip--warn">папки Edu, News, Work, Dev</li>
-            <li class="chip chip--warn">сотни непрочитанных</li>
-            <li class="chip chip--danger">важное теряется</li>
-            <li class="chip">пост для своего канала — «надо бы написать»</li>
-            <li class="chip">и так каждый день</li>
-          </ul>
+          <div class="pillar">
+            <h2>У автора нет <em>второго мозга</em>.</h2>
+            <p class="muted">
+              Telegram — основной канал знания в 2026-м. Но ни один из
+              десятков твоих каналов не встанет в очередь и не
+              попросит: «прочитай меня первым».
+            </p>
+          </div>
+          <div class="essay reveal-stagger">
+            <p class="drop">
+              День начинается одинаково: четыре папки, сотни непрочитанных сообщений,
+              три из них — важные, два — гениальные, остальные — реклама и анонсы.
+              Отделить одно от другого <em>глазами</em> занимает час-полтора каждый день.
+            </p>
+            <p>
+              К вечеру в голове — обрывки идей, которые хотелось разобрать в пост для своего канала.
+              Кнопок «сохранить в тему» у Telegram нет. Заметки делать некогда.
+              Половина идей к утру забыта.
+            </p>
+            <blockquote class="pull-quote">
+              Инструменты, которые у нас есть, не созданы для работы со <em>своим вниманием</em>.
+              Они — для чтения ленты другого.
+            </blockquote>
+          </div>
         </div>
       </section>
 
-      <!-- 3. Product -->
-      <section class="slide" id="product" data-title="Продукт">
+      <!-- ============================================================
+           03 — PRODUCT (with /list /rm /mv /undo + styles)
+           ============================================================ -->
+      <section
+        class="slide slide-product"
+        id="product"
+        data-title="Product"
+        data-section="Solution"
+        data-roman="III"
+      >
+        <div class="slide__meta" aria-hidden="true">
+          <span class="slide__meta__no">№ 03 · Solution</span>
+          <span class="sep"></span>
+          <span class="slide__meta__kicker">Интерфейс</span>
+        </div>
         <div class="slide__inner reveal">
-          <p class="eyebrow">что это</p>
-          <h2>Один userbot. Четыре команды. Полный контроль.</h2>
-          <p class="slide__text">
-            Локальный <strong>Telegram userbot</strong> на Telethon: команды в ЛС, сохранение
-            материалов по темам, генерация текста через <strong>OpenRouter</strong>.
-          </p>
-          <ul class="feature-list">
-            <li><code>/digest</code> — дайджест непрочитанного по выбранным папкам</li>
-            <li>Forward поста → выбор темы → запись в локальную базу знаний</li>
-            <li><code>/write &lt;тема&gt;</code> — синтез авторского поста из сохранённого</li>
-            <li><code>/stats</code> — сколько постов уже лежит по каждой теме</li>
-          </ul>
+          <div>
+            <h2>Один бот в ЛС. <em>Восемь</em> команд. База у тебя дома.</h2>
+            <p class="muted" style="margin-top: 1.5rem;">
+              TeleFlow — локальный Telegram userbot на Telethon.
+              Обзор непрочитанного, архив по темам, черновик поста —
+              на одном экране, без отдельных UI.
+            </p>
+          </div>
+          <div class="cmd-table reveal-stagger">
+            <div class="cmd-row cmd-row--group">
+              <div class="cmd-row__name">Основные</div>
+              <div class="cmd-row__desc"></div>
+            </div>
+            <div class="cmd-row">
+              <div class="cmd-row__name">/digest</div>
+              <div class="cmd-row__desc">Дайджест непрочитанного из выбранных папок. <strong>LLM размечает батчами</strong>, отдаётся в ЛС.</div>
+            </div>
+            <div class="cmd-row">
+              <div class="cmd-row__name">forward <span class="dim">+ тема</span></div>
+              <div class="cmd-row__desc">Пересылка поста → выбор темы → <strong>запись в <code>data/knowledge/</code></strong>.</div>
+            </div>
+            <div class="cmd-row">
+              <div class="cmd-row__name">/write &lt;тема&gt;</div>
+              <div class="cmd-row__desc">Синтез авторского поста <strong>только из материалов этой темы</strong>. Флаг <code>--style</code> — выбор тональности.</div>
+            </div>
+            <div class="cmd-row">
+              <div class="cmd-row__name">/stats</div>
+              <div class="cmd-row__desc">Сколько записей в базе по каждой теме.</div>
+            </div>
+            <div class="cmd-row cmd-row--group">
+              <div class="cmd-row__name">Микро-CRUD</div>
+              <div class="cmd-row__desc"></div>
+            </div>
+            <div class="cmd-row">
+              <div class="cmd-row__name">/list &lt;тема&gt;</div>
+              <div class="cmd-row__desc">Последние записи: <strong>id + хвост текста</strong>.</div>
+            </div>
+            <div class="cmd-row">
+              <div class="cmd-row__name">/rm &lt;id&gt;</div>
+              <div class="cmd-row__desc">Удалить запись по id с защитой от path-traversal.</div>
+            </div>
+            <div class="cmd-row">
+              <div class="cmd-row__name">/mv &lt;id&gt; &lt;тема&gt;</div>
+              <div class="cmd-row__desc">Перенести в другую тему — атомарно.</div>
+            </div>
+            <div class="cmd-row">
+              <div class="cmd-row__name">/undo</div>
+              <div class="cmd-row__desc">Откат последнего <code>save</code>. Хранится <strong>per-user в SQLite</strong>.</div>
+            </div>
+          </div>
         </div>
       </section>
 
-      <!-- 4. Flow diagram -->
-      <section class="slide slide--wide" id="flow" data-title="Поток">
+      <!-- ============================================================
+           04 — FLOW DIAGRAM
+           ============================================================ -->
+      <section
+        class="slide slide-flow"
+        id="flow"
+        data-title="Flow"
+        data-section="Architecture"
+        data-roman="IV"
+      >
+        <div class="slide__meta" aria-hidden="true">
+          <span class="slide__meta__no">№ 04 · Architecture</span>
+          <span class="sep"></span>
+          <span class="slide__meta__kicker">Поток данных</span>
+        </div>
         <div class="slide__inner reveal">
-          <p class="eyebrow">как это работает</p>
-          <h2>Схема потока данных</h2>
+          <div>
+            <h2>Пайплайн из <em>пяти</em> слоёв.</h2>
+            <p class="muted" style="margin-top: 1.5rem;">
+              Каждый узел — отдельный модуль <code>src/teleflow/*</code>.
+              Между узлами — явные границы ответственности.
+            </p>
+            <p class="flow-caption">Схема / поток данных дайджеста</p>
+          </div>
           <figure class="flow-diagram" aria-label="Схема TeleFlow">
-            <svg viewBox="0 0 720 200" xmlns="http://www.w3.org/2000/svg" role="img">
+            <svg viewBox="0 0 720 220" xmlns="http://www.w3.org/2000/svg" role="img">
               <defs>
                 <marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto">
-                  <path d="M0,0 L8,4 L0,8 Z" fill="var(--accent-dim)" />
+                  <path d="M0,0 L8,4 L0,8 Z" fill="currentColor" />
                 </marker>
               </defs>
+
               <g class="flow-node" data-step="0">
-                <rect x="8" y="60" width="100" height="72" rx="10" />
-                <text x="58" y="96" text-anchor="middle">Папки TG</text>
-                <text x="58" y="114" text-anchor="middle" class="flow-small">непрочитанное</text>
+                <rect x="8" y="70" width="104" height="80" rx="2" />
+                <text x="60" y="106" text-anchor="middle">Folders</text>
+                <text x="60" y="126" text-anchor="middle" class="flow-small">unread · tg</text>
               </g>
-              <line x1="116" y1="96" x2="148" y2="96" stroke="var(--accent-dim)" stroke-width="2" marker-end="url(#arrow)" />
+              <line x1="118" y1="110" x2="150" y2="110" stroke-width="1.2" marker-end="url(#arrow)" />
+
               <g class="flow-node" data-step="1">
-                <rect x="152" y="60" width="100" height="72" rx="10" />
-                <text x="202" y="96" text-anchor="middle">Сбор</text>
-                <text x="202" y="114" text-anchor="middle" class="flow-small">collector.py</text>
+                <rect x="152" y="70" width="110" height="80" rx="2" />
+                <text x="207" y="106" text-anchor="middle">Collector</text>
+                <text x="207" y="126" text-anchor="middle" class="flow-small">+ dedupe</text>
               </g>
-              <line x1="260" y1="96" x2="292" y2="96" stroke="var(--accent-dim)" stroke-width="2" marker-end="url(#arrow)" />
+              <line x1="268" y1="110" x2="298" y2="110" stroke-width="1.2" marker-end="url(#arrow)" />
+
               <g class="flow-node" data-step="2">
-                <rect x="296" y="48" width="112" height="96" rx="10" />
-                <text x="352" y="84" text-anchor="middle">OpenRouter</text>
-                <text x="352" y="104" text-anchor="middle" class="flow-small">LLM разметка</text>
-                <text x="352" y="122" text-anchor="middle" class="flow-small">+ ranker</text>
+                <rect x="300" y="54" width="128" height="112" rx="2" />
+                <text x="364" y="96" text-anchor="middle">LLM Annotator</text>
+                <text x="364" y="118" text-anchor="middle" class="flow-small">openrouter · batch 8</text>
+                <text x="364" y="138" text-anchor="middle" class="flow-small">budget 300 s</text>
               </g>
-              <line x1="414" y1="96" x2="446" y2="96" stroke="var(--accent-dim)" stroke-width="2" marker-end="url(#arrow)" />
+              <line x1="434" y1="110" x2="464" y2="110" stroke-width="1.2" marker-end="url(#arrow)" />
+
               <g class="flow-node" data-step="3">
-                <rect x="450" y="60" width="100" height="72" rx="10" />
-                <text x="500" y="96" text-anchor="middle">ЛС / канал</text>
-                <text x="500" y="114" text-anchor="middle" class="flow-small">chunked</text>
+                <rect x="466" y="70" width="110" height="80" rx="2" />
+                <text x="521" y="106" text-anchor="middle">Ranker</text>
+                <text x="521" y="126" text-anchor="middle" class="flow-small">hybrid score</text>
               </g>
-              <line x1="558" y1="96" x2="590" y2="96" stroke="var(--accent-dim)" stroke-width="2" marker-end="url(#arrow)" />
+              <line x1="582" y1="110" x2="612" y2="110" stroke-width="1.2" marker-end="url(#arrow)" />
+
               <g class="flow-node" data-step="4">
-                <rect x="594" y="52" width="118" height="88" rx="10" />
-                <text x="653" y="88" text-anchor="middle">База тем</text>
-                <text x="653" y="106" text-anchor="middle" class="flow-small">data/knowledge</text>
-                <text x="653" y="124" text-anchor="middle" class="flow-small">→ /write</text>
+                <rect x="614" y="70" width="100" height="80" rx="2" />
+                <text x="664" y="106" text-anchor="middle">Digest</text>
+                <text x="664" y="126" text-anchor="middle" class="flow-small">chunked · ЛС</text>
               </g>
+
+              <!-- side branch: save to knowledge -->
+              <path
+                class="flow-arrow"
+                d="M 521 150 C 521 190, 300 190, 300 165"
+                fill="none"
+                stroke-width="1.2"
+                marker-end="url(#arrow)"
+              />
+              <text x="420" y="208" text-anchor="middle" fill="#7befd9" font-family="JetBrains Mono" font-size="10" letter-spacing="1.5">forward → theme → /write</text>
             </svg>
           </figure>
-          <p class="slide__caption">Каждый узел — отдельный модуль. Между узлами — явные границы ответственности.</p>
         </div>
       </section>
 
-      <!-- 5. Value / Economy in numbers -->
-      <section class="slide" id="value" data-title="Польза">
+      <!-- ============================================================
+           05 — VALUE
+           ============================================================ -->
+      <section
+        class="slide slide-value"
+        id="value"
+        data-title="Value"
+        data-section="Economics"
+        data-roman="V"
+      >
+        <div class="slide__meta" aria-hidden="true">
+          <span class="slide__meta__no">№ 05 · Economics</span>
+          <span class="sep"></span>
+          <span class="slide__meta__kicker">Польза в цифрах</span>
+        </div>
         <div class="slide__inner reveal">
-          <p class="eyebrow">польза в цифрах</p>
-          <h2>ИИ здесь не «вау», а возвращённое время.</h2>
-          <div class="kpi-grid">
-            <div class="kpi-card">
-              <p class="kpi-card__value">≈ 1 ч</p>
-              <p class="kpi-card__label">в день уходит на ручную выжимку + поиск идей для постов</p>
-            </div>
-            <div class="kpi-card kpi-card--alt">
-              <p class="kpi-card__value">~30 ч</p>
-              <p class="kpi-card__label">в месяц экономии по моим замерам на трёх папках</p>
-            </div>
-            <div class="kpi-card kpi-card--alt3">
-              <p class="kpi-card__value">≈ 60 ₽</p>
-              <p class="kpi-card__label">себестоимость одного дайджеста через OpenRouter (GPT-4o-mini)</p>
-            </div>
-            <div class="kpi-card">
-              <p class="kpi-card__value">×0</p>
-              <p class="kpi-card__label">копирайтеров на подбор источников — работает на контексте автора</p>
-            </div>
+          <div>
+            <h2>ИИ здесь — не для <em>«вау»</em>.<br/>Он возвращает время.</h2>
+            <p class="muted" style="margin-top: 1.5rem;">
+              Цифры — мои замеры на трёх папках, нижняя граница.
+              Не выдуманная рыночная статистика.
+            </p>
           </div>
-          <p class="slide__caption">Цифры — мои замеры, а не рыночная статистика. На слайде — нижняя граница.</p>
+          <div>
+            <ul class="value-list reveal-stagger">
+              <li>
+                <div class="figure">≈ 1 ч</div>
+                <div class="figure-label">
+                  в день собственноручной работы — обзор каналов и поиск идей для постов.
+                  <span class="muted">было / для одного автора</span>
+                </div>
+              </li>
+              <li>
+                <div class="figure sand">~30 ч</div>
+                <div class="figure-label">
+                  в месяц экономии при трёх папках и одной теме собственного производства.
+                  <span class="muted">замер · декабрь</span>
+                </div>
+              </li>
+              <li>
+                <div class="figure sky">≈ 60 ₽</div>
+                <div class="figure-label">
+                  себестоимость одного дайджеста через OpenRouter (GPT-4o-mini).
+                  <span class="muted">≤ 80 постов в обработке</span>
+                </div>
+              </li>
+              <li>
+                <div class="figure">×0</div>
+                <div class="figure-label">
+                  копирайтеров на подбор источников — инструмент работает на контексте автора.
+                  <span class="muted">стиль передаётся через флаг <code>--style</code></span>
+                </div>
+              </li>
+            </ul>
+            <p class="value-caption">
+              Не «сэкономил время». <em>Вернул</em> его — туда, где автор думает,
+              а не копирует между вкладками.
+            </p>
+          </div>
         </div>
       </section>
 
-      <!-- 6. AI in detail -->
-      <section class="slide" id="ai" data-title="ИИ внутри">
+      <!-- ============================================================
+           06 — AI (lab notes)
+           ============================================================ -->
+      <section
+        class="slide slide-ai"
+        id="ai"
+        data-title="AI"
+        data-section="Intelligence"
+        data-roman="VI"
+      >
+        <div class="slide__meta" aria-hidden="true">
+          <span class="slide__meta__no">№ 06 · Intelligence</span>
+          <span class="sep"></span>
+          <span class="slide__meta__kicker">Где ИИ, а где правила</span>
+        </div>
         <div class="slide__inner reveal">
-          <p class="eyebrow">где реально ИИ</p>
-          <h2>Две точки вызова LLM. Всё остальное — детерминированные правила.</h2>
-          <div class="bento bento--2">
-            <article class="bento__card">
-              <p class="bento__tag">точка 1 · разметка дайджеста</p>
-              <h3>DigestAnnotator</h3>
-              <p>Батчами по <code>8</code> постов, с лимитом <code>1600</code> симв. на пост, общим бюджетом <code>300</code> с. Ответ строго JSON: <code>keep, importance, category, summary</code>. Если модель сорвала JSON — fallback на короткую выжимку из текста поста.</p>
-            </article>
-            <article class="bento__card">
-              <p class="bento__tag">точка 2 · синтез поста</p>
-              <h3>synthesize_post</h3>
-              <p>На <code>/write &lt;тема&gt;</code> читает <strong>только</strong> <code>data/knowledge/&lt;тема&gt;/</code>, режет до <code>20</code> файлов и <code>12 000</code> симв., идёт в LLM с инструкцией «синтезировать, не пересказывать, не выдумывать факты вне входа».</p>
-            </article>
+          <h2><em>Две</em> точки вызова LLM. Всё остальное — детерминировано.</h2>
+
+          <article class="lab-note">
+            <span class="lab-note__tag">§ 01 · digest annotator</span>
+            <h3>Разметка дайджеста</h3>
+            <p>Батчи по 8 постов, обрезка входа, общий бюджет. Ответ — строго JSON; при сорванном формате есть парсер-fallback и дефолтный summary из текста.</p>
+            <dl>
+              <dt>batch size</dt><dd><b>8</b> posts</dd>
+              <dt>text cap</dt><dd><b>1 600</b> chars</dd>
+              <dt>budget</dt><dd><b>300</b> s</dd>
+              <dt>temp</dt><dd>0.2</dd>
+            </dl>
+          </article>
+
+          <article class="lab-note">
+            <span class="lab-note__tag">§ 02 · write synthesizer</span>
+            <h3>Синтез авторского поста</h3>
+            <p>Читает <em>только</em> папку темы, режет контекст по лимитам и стилевому оверлею, просит «синтезируй одну идею, не пересказывай, не выдумывай вне входа».</p>
+            <dl>
+              <dt>max files</dt><dd><b>20</b></dd>
+              <dt>context cap</dt><dd><b>12 000</b> chars</dd>
+              <dt>styles</dt><dd><b>config</b> · env</dd>
+              <dt>temp</dt><dd>0.35</dd>
+            </dl>
+          </article>
+
+          <article class="lab-note">
+            <span class="lab-note__tag">§ 03 · hybrid ranker</span>
+            <h3>Рейтинг без магии</h3>
+            <p>final = <code>importance × 10 + log₁(views, forwards, reactions) + keyword_hits</code>. Если LLM сбойнёт на всём батче — дайджест всё равно выйдет.</p>
+            <dl>
+              <dt>dependency</dt><dd>LLM · <b>optional</b></dd>
+              <dt>fallback</dt><dd>метрический скор</dd>
+            </dl>
+          </article>
+
+          <article class="lab-note">
+            <span class="lab-note__tag">§ 04 · text fingerprint</span>
+            <h3>Дедупликация поверх всей базы</h3>
+            <p>SHA-256 по нормализованному тексту (без пробелов, эмодзи и модификаторов). При <code>save</code> сверяется <em>по всем темам</em> — дубликат не записывается.</p>
+            <dl>
+              <dt>hash</dt><dd><b>sha-256</b></dd>
+              <dt>norm</dt><dd>strip + noemoji</dd>
+              <dt>reuse</dt><dd>в digest дедупе тоже</dd>
+            </dl>
+          </article>
+
+          <div class="ai-footer">
+            <span><span class="dot"></span> LLM — там, где нужен смысл</span>
+            <span><span class="dot sky"></span> правила — там, где нужна предсказуемость</span>
+            <span><span class="dot sand"></span> model: <code>openai/gpt-4o-mini</code> · env-configurable</span>
           </div>
-          <ul class="chip-row">
-            <li class="chip chip--accent">model · openai/gpt-4o-mini (можно сменить через env)</li>
-            <li class="chip">timeout · 120 s</li>
-            <li class="chip">batch · 8</li>
-            <li class="chip">annotate budget · 300 s</li>
-            <li class="chip">гибридный ранжировщик = LLM + log-метрики канала</li>
+        </div>
+      </section>
+
+      <!-- ============================================================
+           07 — RELIABILITY
+           ============================================================ -->
+      <section
+        class="slide slide-reliability"
+        id="reliability"
+        data-title="Reliability"
+        data-section="Discipline"
+        data-roman="VII"
+      >
+        <div class="slide__meta" aria-hidden="true">
+          <span class="slide__meta__no">№ 07 · Discipline</span>
+          <span class="sep"></span>
+          <span class="slide__meta__kicker">Что не даёт упасть</span>
+        </div>
+        <div class="slide__inner reveal">
+          <div>
+            <h2>Взрослые привычки в <em>учебном</em> проекте.</h2>
+            <p class="muted" style="margin-top: 1.5rem;">
+              Всё продумано заранее, а не исправлено постфактум.
+              Продакшен-ограничения — часть дизайна MVP.
+            </p>
+          </div>
+          <ul class="principle-list reveal-stagger">
+            <li><div><strong>Whitelist пользователей</strong><span>Первая проверка в обработчике сообщений — <code>ALLOWED_USER_IDS</code>.</span></div></li>
+            <li><div><strong>DRY_RUN по умолчанию</strong><span>Ни канал, ни state-db не обновляются, пока автор явно не разрешит.</span></div></li>
+            <li><div><strong>Chunked-отправка</strong><span>Длинные дайджесты режутся по Telegram-лимиту с паузами между кусками.</span></div></li>
+            <li><div><strong>FloodWait &amp; PeerFlood</strong><span>Оба исключения обрабатываются — процесс не падает на лимитах.</span></div></li>
+            <li><div><strong>Atomic JSON write</strong><span><code>tempfile.mkstemp</code> + <code>os.replace</code> — запись пережевёт краш в середине.</span></div></li>
+            <li><div><strong>Тайм-бюджеты на всех слоях</strong><span>connect, RPC, LLM-аннотация, весь <code>/digest</code> — у каждого свой лимит.</span></div></li>
+            <li><div><strong>SOCKS5 и MTProxy</strong><span>Реальные сценарии для Telegram в РФ — два протокола прокси из коробки.</span></div></li>
+            <li><div><strong>Защита от path traversal</strong><span>ID — только <code>[a-f0-9]{32}</code>; <code>/undo</code> не выйдет за <code>data/knowledge/</code>.</span></div></li>
           </ul>
         </div>
       </section>
 
-      <!-- 7. Reliability -->
-      <section class="slide" id="reliability" data-title="Надёжность">
-        <div class="slide__inner reveal">
-          <p class="eyebrow">контроль и безопасность</p>
-          <h2>Взрослые привычки в учебном проекте.</h2>
-          <ul class="feature-list feature-list--2col">
-            <li><strong>Whitelist</strong> пользователей по <code>ALLOWED_USER_IDS</code></li>
-            <li><strong>DRY_RUN</strong> — превью без записи в канал и state</li>
-            <li><strong>Chunked</strong>-отправка длинных сообщений (лимит Telegram)</li>
-            <li><strong>FloodWait</strong> и <strong>PeerFlood</strong> обработаны, не падаем</li>
-            <li><strong>Атомарная</strong> запись JSON через tempfile + <code>os.replace</code></li>
-            <li><strong>Тайм-бюджеты</strong> на connect / RPC / весь <code>/digest</code></li>
-            <li><strong>SOCKS5</strong> и <strong>MTProxy</strong> — realistic под Telegram в РФ</li>
-            <li>Секреты только в <code>.env</code>, данные локально в <code>data/</code></li>
-          </ul>
+      <!-- ============================================================
+           08 — COURSE STACK
+           ============================================================ -->
+      <section
+        class="slide slide-stack"
+        id="course-stack"
+        data-title="Stack"
+        data-section="Course map"
+        data-roman="VIII"
+      >
+        <div class="slide__meta" aria-hidden="true">
+          <span class="slide__meta__no">№ 08 · Course map</span>
+          <span class="sep"></span>
+          <span class="slide__meta__kicker">Курс → артефакты</span>
         </div>
-      </section>
-
-      <!-- 8. Course stack → artefacts -->
-      <section class="slide slide--wide" id="course-stack" data-title="Стек курса">
         <div class="slide__inner reveal">
-          <p class="eyebrow">9 модулей → 1 рабочий продукт</p>
-          <h2>Каждый модуль курса оставил артефакт в проекте.</h2>
-          <div class="stack-grid">
-            <div class="stack-card"><span class="stack-card__no">M00</span><strong>Онбординг</strong><span>настроенный Cursor, привычка к коммитам по шагам</span></div>
-            <div class="stack-card"><span class="stack-card__no">M01</span><strong>Старт</strong><span>скелет проекта и репозитория, первые запуски</span></div>
-            <div class="stack-card"><span class="stack-card__no">M02</span><strong>Контекст</strong><span>SPEC.md v2.1 + .env как явный контракт, .mdc-стиль</span></div>
-            <div class="stack-card"><span class="stack-card__no">M03</span><strong>Инструменты</strong><span>терминал, Git, GitHub — 20+ осознанных коммитов</span></div>
-            <div class="stack-card"><span class="stack-card__no">M04</span><strong>Агенты</strong><span>DigestAnnotator и synthesize_post — отдельные роли</span></div>
-            <div class="stack-card"><span class="stack-card__no">M05</span><strong>Telegram</strong><span>Telethon userbot, FSM, команды, chunked-send</span></div>
-            <div class="stack-card"><span class="stack-card__no">M06</span><strong>API</strong><span>OpenRouter chat/completions на stdlib urllib, без SDK</span></div>
-            <div class="stack-card"><span class="stack-card__no">M07</span><strong>Вайб-кодинг</strong><span>эта презентация — HTML/CSS/JS без сборки и npm</span></div>
+          <div>
+            <h2>Ни один модуль <br/>не остался <em>теорией</em>.</h2>
+            <p class="muted" style="margin-top: 1.5rem;">
+              У каждого модуля курса — свой след в репозитории.
+              Это осознанный выбор, а не случайность.
+            </p>
+          </div>
+          <div class="stack-matrix reveal-stagger">
+            <div class="stack-cell">
+              <span class="stack-cell__no">M 00 · онбординг</span>
+              <span class="stack-cell__title">Setup</span>
+              <span class="stack-cell__body">Cursor, модели, токены, дисциплина коммитов.</span>
+            </div>
+            <div class="stack-cell">
+              <span class="stack-cell__no">M 01 · старт</span>
+              <span class="stack-cell__title">First loop</span>
+              <span class="stack-cell__body">Скелет репозитория, первый <code>python -m teleflow</code>.</span>
+            </div>
+            <div class="stack-cell">
+              <span class="stack-cell__no">M 02 · контекст</span>
+              <span class="stack-cell__title">The SPEC</span>
+              <span class="stack-cell__body"><code>SPEC.md v2.1</code> + <code>.env</code> как явный контракт, <code>.mdc</code>-стиль правил.</span>
+            </div>
+            <div class="stack-cell">
+              <span class="stack-cell__no">M 03 · инструменты</span>
+              <span class="stack-cell__title">Gitflow</span>
+              <span class="stack-cell__body">Маленькие коммиты, PR, ветки <code>dev</code>, 20+ осознанных шагов.</span>
+            </div>
+            <div class="stack-cell">
+              <span class="stack-cell__no">M 04 · агенты</span>
+              <span class="stack-cell__title">Two agents</span>
+              <span class="stack-cell__body"><code>DigestAnnotator</code> и <code>synthesize_post</code> — отдельные роли.</span>
+            </div>
+            <div class="stack-cell">
+              <span class="stack-cell__no">M 05 · telegram</span>
+              <span class="stack-cell__title">Userbot</span>
+              <span class="stack-cell__body">Telethon, FSM, 8 команд, chunked-send, прокси.</span>
+            </div>
+            <div class="stack-cell">
+              <span class="stack-cell__no">M 06 · api</span>
+              <span class="stack-cell__title">OpenRouter</span>
+              <span class="stack-cell__body">chat/completions на <code>stdlib urllib</code>, без SDK.</span>
+            </div>
+            <div class="stack-cell">
+              <span class="stack-cell__no">M 07 · вайб-кодинг</span>
+              <span class="stack-cell__title">This deck</span>
+              <span class="stack-cell__body">HTML / CSS / JS без сборки и npm. То, что вы видите сейчас.</span>
+            </div>
           </div>
         </div>
       </section>
 
-      <!-- 9. Time -->
-      <section class="slide" id="time" data-title="Время">
-        <div class="slide__inner reveal">
-          <p class="eyebrow">сколько ушло</p>
-          <h2>≈ 40 часов. Без AI это были бы недели.</h2>
-          <div class="time-grid">
-            <div class="time-card">
-              <p class="time-card__head">SPEC и контекст</p>
-              <p class="time-card__value">~6 ч</p>
-              <p class="time-card__note">Описание задачи оказалось дольше кода — главный инсайт курса.</p>
-            </div>
-            <div class="time-card">
-              <p class="time-card__head">Telethon и сбор</p>
-              <p class="time-card__value">~12 ч</p>
-              <p class="time-card__note">Папки, непрочитанное, прокси, FloodWait — самое «тяжёлое» по дебагу.</p>
-            </div>
-            <div class="time-card">
-              <p class="time-card__head">OpenRouter и синтез</p>
-              <p class="time-card__value">~9 ч</p>
-              <p class="time-card__note">Батчи, бюджеты, JSON-мод, промпт для /write.</p>
-            </div>
-            <div class="time-card">
-              <p class="time-card__head">FSM, knowledge, UX</p>
-              <p class="time-card__value">~8 ч</p>
-              <p class="time-card__note">Команды, темы, атомарная запись, whitelist, chunked-send.</p>
-            </div>
-            <div class="time-card">
-              <p class="time-card__head">Упаковка</p>
-              <p class="time-card__value">~5 ч</p>
-              <p class="time-card__note">README, SPEC, презентация, текст питча.</p>
-            </div>
-          </div>
-          <ul class="chip-row">
-            <li class="chip chip--accent">×5 ускорение vs ручной путь</li>
-            <li class="chip">0 строк без ревью в Cursor</li>
-            <li class="chip">15 модулей / ~1500 строк Python</li>
-          </ul>
+      <!-- ============================================================
+           09 — TIME
+           ============================================================ -->
+      <section
+        class="slide slide-time"
+        id="time"
+        data-title="Time"
+        data-section="Log"
+        data-roman="IX"
+      >
+        <div class="slide__meta" aria-hidden="true">
+          <span class="slide__meta__no">№ 09 · Log</span>
+          <span class="sep"></span>
+          <span class="slide__meta__kicker">Как прошли 40 часов</span>
         </div>
-      </section>
-
-      <!-- 10. Roadmap -->
-      <section class="slide slide--wide" id="roadmap" data-title="Дальше">
         <div class="slide__inner reveal">
-          <p class="eyebrow">куда ведёт</p>
-          <h2>Горизонты развития — от MVP до SaaS.</h2>
-          <div class="horizons">
-            <article class="horizon">
-              <p class="horizon__tag">горизонт 01 · ближний</p>
-              <h3>Продукт для одного автора</h3>
-              <ul>
-                <li>Планировщик <code>/digest</code> по расписанию</li>
-                <li>Дашборд <code>/stats</code> с трендами тем</li>
-                <li>Шаблоны рубрик для <code>/write</code></li>
-                <li>Переезд с ПК на VPS (systemd + Docker)</li>
-              </ul>
-            </article>
-            <article class="horizon horizon--mid">
-              <p class="horizon__tag">горизонт 02 · продукт</p>
-              <h3>B2B-версия для АССИСТ+</h3>
-              <ul>
-                <li>Мультитенант: один процесс, много авторов</li>
-                <li>Bot API вместо userbot для массовой раздачи</li>
-                <li>Биллинг и лимиты токенов на уровне тенанта</li>
-                <li>Библиотека готовых промптов под ниши</li>
-              </ul>
-            </article>
-            <article class="horizon horizon--far">
-              <p class="horizon__tag">горизонт 03 · масштаб</p>
-              <h3>Платформа бизнес-ассистентов</h3>
-              <ul>
-                <li>Маркет агентов от выпускников АССИСТ+</li>
-                <li>Голосовой инбокс (Whisper) как отдельный канал</li>
-                <li>Метрики качества и A/B моделей на OpenRouter</li>
-                <li>Интеграции с CRM и контент-платформами</li>
-              </ul>
-            </article>
+          <div>
+            <h2><em>≈ 40 часов.</em><br/>Без AI — недели.</h2>
+            <p class="muted" style="margin-top: 1.5rem;">
+              И самое интересное: описание SPEC заняло больше,
+              чем интеграция с OpenRouter.
+              Контекст оказался дороже кода.
+            </p>
+          </div>
+          <div class="time-line reveal-stagger">
+            <div class="time-row">
+              <span class="time-row__name">phase 01</span>
+              <span class="time-row__note">SPEC, контекст, границы MVP</span>
+              <span class="time-row__hours">~ 6 h</span>
+            </div>
+            <div class="time-row">
+              <span class="time-row__name">phase 02</span>
+              <span class="time-row__note">Telethon · папки · сбор непрочитанного</span>
+              <span class="time-row__hours">~ 12 h</span>
+            </div>
+            <div class="time-row">
+              <span class="time-row__name">phase 03</span>
+              <span class="time-row__note">OpenRouter, батчи, ranker, publisher</span>
+              <span class="time-row__hours">~ 9 h</span>
+            </div>
+            <div class="time-row">
+              <span class="time-row__name">phase 04</span>
+              <span class="time-row__note">FSM · knowledge · chunked-send · UX</span>
+              <span class="time-row__hours">~ 8 h</span>
+            </div>
+            <div class="time-row">
+              <span class="time-row__name">phase 05</span>
+              <span class="time-row__note">Упаковка · SPEC · deck · текст питча</span>
+              <span class="time-row__hours">~ 5 h</span>
+            </div>
+            <div class="time-summary">
+              <span>× 5 ускорение / ручной путь</span>
+              <span>0 строк <b>без ревью в Cursor</b></span>
+              <span><b>15</b> модулей · ~1.5 k lines</span>
+            </div>
           </div>
         </div>
       </section>
 
-      <!-- 11. Takeaways -->
-      <section class="slide" id="course" data-title="С курса">
+      <!-- ============================================================
+           10 — ROADMAP
+           ============================================================ -->
+      <section
+        class="slide slide-roadmap"
+        id="roadmap"
+        data-title="Roadmap"
+        data-section="Horizons"
+        data-roman="X"
+      >
+        <div class="slide__meta" aria-hidden="true">
+          <span class="slide__meta__no">№ 10 · Horizons</span>
+          <span class="sep"></span>
+          <span class="slide__meta__kicker">Что дальше</span>
+        </div>
         <div class="slide__inner reveal">
-          <p class="eyebrow">что забрал с курса</p>
-          <h2>Главное — мышление, а не редактор.</h2>
-          <div class="bento bento--4">
-            <article class="bento__card bento__card--tight">
-              <p class="bento__tag">забрал</p>
-              <h3>Контекст &gt; промпт</h3>
-              <p>90% качества — это SPEC, структура папок и <code>.env</code>, а не удачная формулировка.</p>
-            </article>
-            <article class="bento__card bento__card--tight">
-              <p class="bento__tag">забрал</p>
-              <h3>Границы ИИ</h3>
-              <p>ИИ — там, где нужен смысл (разметка, синтез). Правила — там, где нужна предсказуемость.</p>
-            </article>
-            <article class="bento__card bento__card--tight">
-              <p class="bento__tag">расту</p>
-              <h3>Продукт, а не код</h3>
-              <p>Бизнес-анализ + AI-продукты: учёба + практика АССИСТ+.</p>
-            </article>
-            <article class="bento__card bento__card--tight">
-              <p class="bento__tag">расту</p>
-              <h3>Углубляю стек</h3>
-              <p>RAG, evals, голосовые агенты, инфраструктура продакшена.</p>
-            </article>
+          <div>
+            <h2>От MVP <br/>к <em>платформе</em>.</h2>
+            <p class="muted" style="margin-top: 1.5rem;">
+              Архитектура разложена на слои так, что каждый горизонт
+              можно запускать независимо.
+            </p>
           </div>
+          <ol class="horizon-list reveal-stagger">
+            <li>
+              <div>
+                <h3 class="horizon__title">Продукт для одного автора</h3>
+                <p class="horizon__body">
+                  Планировщик дайджеста по расписанию, шаблоны рубрик для <code>/write</code>,
+                  переезд с ПК на VPS с <code>systemd</code> и Docker.
+                  <strong>Evals и юнит-тесты</strong> — отдельным модулем.
+                </p>
+                <div class="horizon__meta">ближний · автор</div>
+              </div>
+            </li>
+            <li>
+              <div>
+                <h3 class="horizon__title">B2B-версия для АССИСТ+</h3>
+                <p class="horizon__body">
+                  Переход на Bot API, мультитенант, биллинг и per-tenant
+                  лимиты токенов, <strong>библиотека промптов под ниши</strong>.
+                </p>
+                <div class="horizon__meta">средний · продукт</div>
+              </div>
+            </li>
+            <li>
+              <div>
+                <h3 class="horizon__title">Платформа бизнес-ассистентов</h3>
+                <p class="horizon__body">
+                  Маркет агентов от выпускников АССИСТ+, голосовой инбокс
+                  как отдельный канал, <strong>A/B моделей</strong> через OpenRouter.
+                </p>
+                <div class="horizon__meta">дальний · масштаб</div>
+              </div>
+            </li>
+          </ol>
         </div>
       </section>
 
-      <!-- 12. Offer -->
-      <section class="slide slide--cta" id="cta" data-title="Оффер">
+      <!-- ============================================================
+           11 — TAKEAWAYS
+           ============================================================ -->
+      <section
+        class="slide slide-course"
+        id="course"
+        data-title="Takeaways"
+        data-section="Notes"
+        data-roman="XI"
+      >
+        <div class="slide__meta" aria-hidden="true">
+          <span class="slide__meta__no">№ 11 · Notes</span>
+          <span class="sep"></span>
+          <span class="slide__meta__kicker">Что забрал</span>
+        </div>
         <div class="slide__inner reveal">
-          <p class="eyebrow">мой оффер</p>
-          <h2>Хочу не аттестат — место в команде.</h2>
-          <p class="slide__lead">
-            TeleFlow — не игрушка для защиты. Это прототип продукта, который решает ровно ту же боль,
-            на которую целится АССИСТ+. Готов приносить его, дорабатывать вместе и учиться у команды
-            быстрее любого курса.
-          </p>
-          <p class="slide__caption">Спасибо команде АССИСТ+ за курс. Давайте строить продукт вместе.</p>
+          <div class="big-quote">
+            Главное — <span class="aqua">мышление</span>,<br/>
+            а не редактор.
+          </div>
+          <aside class="marginalia reveal-stagger">
+            <div class="marginalia__item">
+              <h4>Забрал · Principle</h4>
+              <p>Контекст важнее промпта. <strong>SPEC, структура папок, .env</strong> — это 90% качества ответа.</p>
+            </div>
+            <div class="marginalia__item">
+              <h4>Забрал · Border</h4>
+              <p>ИИ — там, где нужен <strong>смысл</strong>. Правила — там, где нужна <strong>предсказуемость</strong>.</p>
+            </div>
+            <div class="marginalia__item">
+              <h4>Расту · Practice</h4>
+              <p>Дальше: RAG, evals, голосовые агенты, <strong>инфраструктура продакшена</strong>.</p>
+            </div>
+            <div class="marginalia__item">
+              <h4>Расту · Direction</h4>
+              <p>Продукт важнее кода. Учусь собирать <strong>инструменты</strong>, а не «писать приложения».</p>
+            </div>
+          </aside>
+        </div>
+      </section>
+
+      <!-- ============================================================
+           12 — CTA
+           ============================================================ -->
+      <section
+        class="slide slide-cta"
+        id="cta"
+        data-title="Offer"
+        data-section="Epilogue"
+        data-roman="XII"
+      >
+        <div class="slide__meta" aria-hidden="true">
+          <span class="slide__meta__no">№ 12 · Epilogue</span>
+          <span class="sep"></span>
+          <span class="slide__meta__kicker">Оффер</span>
+        </div>
+        <div class="slide__inner reveal">
+          <div>
+            <h2 class="cta-title">
+              Не аттестат.<br/>
+              <em>Место в команде.</em>
+            </h2>
+            <p class="cta-body">
+              TeleFlow — не игрушка для защиты. Это прототип продукта, который решает
+              ровно ту же боль, на которую целится АССИСТ+. Готов приносить его,
+              дорабатывать вместе и учиться у команды <em>быстрее любого курса</em>.
+            </p>
+          </div>
+          <div class="cta-aside">
+            <div><strong>Проект</strong></div>
+            <div>assist-final-project</div>
+            <div style="margin-top: 1rem;"><strong>Статус</strong></div>
+            <div>MVP · v 2.1</div>
+            <div style="margin-top: 1rem;"><strong>Следующий шаг</strong></div>
+            <div>evals · diagnose · tests</div>
+          </div>
+          <div class="cta-rule">
+            <span>TELEFLOW · DOSSIER № 01</span>
+            <span class="end">— THE END —</span>
+          </div>
         </div>
       </section>
     </main>
