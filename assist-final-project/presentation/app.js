@@ -1,6 +1,5 @@
 /**
- * TeleFlow pitch deck: section nav, scroll-spy, keyboard, flow diagram pulse,
- * slide counter, speaker timer (5:00 green / 7:00 amber / 7:00+ red).
+ * TeleFlow pitch deck: section nav, scroll-spy, keyboard, flow diagram pulse, slide counter.
  */
 (function () {
   const deck = document.getElementById("deck");
@@ -8,10 +7,6 @@
   const navList = document.querySelector(".deck-nav__list");
   const progressEl = document.getElementById("deck-progress");
   const counterEl = document.getElementById("slide-counter");
-  const timerEl = document.getElementById("speaker-timer");
-  const timeEl = document.getElementById("speaker-time");
-  const toggleBtn = document.getElementById("timer-toggle");
-  const resetBtn = document.getElementById("timer-reset");
 
   const pad = (n) => (n < 10 ? "0" + n : "" + n);
 
@@ -138,52 +133,6 @@
     io.observe(flowSlide);
   }
 
-  /* -------- Speaker timer (5:00 / 7:00 zones) -------- */
-  const SOFT_LIMIT_SEC = 5 * 60;
-  const HARD_LIMIT_SEC = 7 * 60;
-  let seconds = 0;
-  let interval = null;
-
-  function renderTimer() {
-    if (!timeEl || !timerEl) return;
-    const m = Math.floor(seconds / 60);
-    const s = seconds % 60;
-    timeEl.textContent = `${pad(m)}:${pad(s)}`;
-    timerEl.classList.toggle("is-running", Boolean(interval));
-    timerEl.classList.toggle("is-warn", seconds >= SOFT_LIMIT_SEC && seconds < HARD_LIMIT_SEC);
-    timerEl.classList.toggle("is-over", seconds >= HARD_LIMIT_SEC);
-  }
-
-  function toggleTimer() {
-    if (!toggleBtn) return;
-    if (interval) {
-      clearInterval(interval);
-      interval = null;
-      toggleBtn.textContent = "старт";
-    } else {
-      interval = window.setInterval(() => {
-        seconds += 1;
-        renderTimer();
-      }, 1000);
-      toggleBtn.textContent = "пауза";
-    }
-    renderTimer();
-  }
-
-  function resetTimer() {
-    if (interval) {
-      clearInterval(interval);
-      interval = null;
-    }
-    seconds = 0;
-    if (toggleBtn) toggleBtn.textContent = "старт";
-    renderTimer();
-  }
-
-  if (toggleBtn) toggleBtn.addEventListener("click", toggleTimer);
-  if (resetBtn) resetBtn.addEventListener("click", resetTimer);
-  renderTimer();
-
   /* -------- Keyboard -------- */
   document.addEventListener("keydown", (e) => {
     if (!deck || slides.length === 0) return;
@@ -212,13 +161,6 @@
       case "End":
         e.preventDefault();
         slides[slides.length - 1].scrollIntoView({ behavior: "smooth", block: "start" });
-        break;
-      case "t":
-      case "T":
-      case "е":
-      case "Е":
-        e.preventDefault();
-        toggleTimer();
         break;
       case "f":
       case "F":

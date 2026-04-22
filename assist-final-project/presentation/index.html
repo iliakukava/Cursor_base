@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>TeleFlow — питч · Кукава Илья · АССИСТ+</title>
+    <title>TeleFlow — питч · АССИСТ+</title>
     <meta name="description" content="TeleFlow — Telegram userbot с LLM-дайджестом и синтезом постов. Финальный проект курса «Cursor AI для бизнес-ассистентов»." />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -29,17 +29,11 @@
       <ul class="deck-nav__list"></ul>
     </nav>
 
-    <!-- Speaker control bar: slide counter + timer -->
+    <!-- Slide counter -->
     <aside class="speaker-bar" aria-label="Панель спикера">
       <div class="speaker-bar__group" title="Номер текущего слайда">
         <span class="speaker-bar__label">slide</span>
-        <span class="speaker-bar__counter" id="slide-counter">01 / 13</span>
-      </div>
-      <div class="speaker-bar__group speaker-bar__timer" id="speaker-timer" title="Таймер спикера: зелёная зона до 5:00, жёлтая до 7:00, красная дальше">
-        <span class="speaker-bar__led" aria-hidden="true"></span>
-        <span class="speaker-bar__time" id="speaker-time">00:00</span>
-        <button type="button" class="speaker-bar__btn" id="timer-toggle" aria-label="Запустить таймер (T)">старт</button>
-        <button type="button" class="speaker-bar__btn" id="timer-reset" aria-label="Сбросить таймер">сброс</button>
+        <span class="speaker-bar__counter" id="slide-counter">01 / 12</span>
       </div>
     </aside>
 
@@ -53,43 +47,11 @@
             Второй мозг для Telegram: дайджесты, тематическая база и черновики постов —
             с <span class="accent">LLM</span>, под твоим контролем.
           </p>
-          <div class="signature">
-            <div class="signature__avatar" aria-hidden="true">ИК</div>
-            <div class="signature__meta">
-              <strong>Кукава Илья</strong>
-              <span>МАИ, Институт №8 · защита итогового проекта</span>
-            </div>
-          </div>
         </div>
-        <p class="hint">Прокрутка или стрелки <kbd>↓</kbd>/<kbd>→</kbd> · <kbd>T</kbd> — таймер · <kbd>F</kbd> — полноэкран</p>
+        <p class="hint">Прокрутка или стрелки <kbd>↓</kbd>/<kbd>→</kbd> · <kbd>F</kbd> — полноэкран · <kbd>P</kbd> — PDF</p>
       </section>
 
-      <!-- 2. About me -->
-      <section class="slide" id="about" data-title="Обо мне">
-        <div class="slide__inner reveal">
-          <p class="eyebrow">30 секунд обо мне</p>
-          <h2>Пришёл не «посмотреть». Пришёл собрать продукт.</h2>
-          <div class="bento bento--3">
-            <article class="bento__card">
-              <p class="bento__tag">кто я</p>
-              <h3>Студент МАИ, 2 курс</h3>
-              <p>Фундаментальная информатика. Уверенно — Excel, SQL, Python (pandas, seaborn). Люблю превращать хаос в процессы.</p>
-            </article>
-            <article class="bento__card">
-              <p class="bento__tag">почему Cursor</p>
-              <h3>AI как коллега</h3>
-              <p>Интересно не «писать код», а ставить задачу и управлять ИИ как командой. Cursor даёт самый короткий путь от идеи до рабочего прототипа.</p>
-            </article>
-            <article class="bento__card">
-              <p class="bento__tag">цель</p>
-              <h3>Попасть в команду АССИСТ+</h3>
-              <p>TeleFlow — моя заявка. Не учебный пример, а каркас продукта, который можно развивать дальше вместе с вами.</p>
-            </article>
-          </div>
-        </div>
-      </section>
-
-      <!-- 3. Problem -->
+      <!-- 2. Problem -->
       <section class="slide" id="problem" data-title="Проблема">
         <div class="slide__inner reveal">
           <p class="eyebrow">боль</p>
@@ -109,7 +71,7 @@
         </div>
       </section>
 
-      <!-- 4. Product -->
+      <!-- 3. Product -->
       <section class="slide" id="product" data-title="Продукт">
         <div class="slide__inner reveal">
           <p class="eyebrow">что это</p>
@@ -127,7 +89,7 @@
         </div>
       </section>
 
-      <!-- 5. Flow diagram -->
+      <!-- 4. Flow diagram -->
       <section class="slide slide--wide" id="flow" data-title="Поток">
         <div class="slide__inner reveal">
           <p class="eyebrow">как это работает</p>
@@ -176,7 +138,7 @@
         </div>
       </section>
 
-      <!-- 6. Value / Economy in numbers -->
+      <!-- 5. Value / Economy in numbers -->
       <section class="slide" id="value" data-title="Польза">
         <div class="slide__inner reveal">
           <p class="eyebrow">польза в цифрах</p>
@@ -203,7 +165,7 @@
         </div>
       </section>
 
-      <!-- 7. AI in detail -->
+      <!-- 6. AI in detail -->
       <section class="slide" id="ai" data-title="ИИ внутри">
         <div class="slide__inner reveal">
           <p class="eyebrow">где реально ИИ</p>
@@ -230,7 +192,7 @@
         </div>
       </section>
 
-      <!-- 8. Reliability -->
+      <!-- 7. Reliability -->
       <section class="slide" id="reliability" data-title="Надёжность">
         <div class="slide__inner reveal">
           <p class="eyebrow">контроль и безопасность</p>
@@ -248,7 +210,7 @@
         </div>
       </section>
 
-      <!-- 9. Course stack → artefacts -->
+      <!-- 8. Course stack → artefacts -->
       <section class="slide slide--wide" id="course-stack" data-title="Стек курса">
         <div class="slide__inner reveal">
           <p class="eyebrow">9 модулей → 1 рабочий продукт</p>
@@ -266,7 +228,7 @@
         </div>
       </section>
 
-      <!-- 10. Time -->
+      <!-- 9. Time -->
       <section class="slide" id="time" data-title="Время">
         <div class="slide__inner reveal">
           <p class="eyebrow">сколько ушло</p>
@@ -306,7 +268,7 @@
         </div>
       </section>
 
-      <!-- 11. Roadmap -->
+      <!-- 10. Roadmap -->
       <section class="slide slide--wide" id="roadmap" data-title="Дальше">
         <div class="slide__inner reveal">
           <p class="eyebrow">куда ведёт</p>
@@ -346,7 +308,7 @@
         </div>
       </section>
 
-      <!-- 12. Takeaways -->
+      <!-- 11. Takeaways -->
       <section class="slide" id="course" data-title="С курса">
         <div class="slide__inner reveal">
           <p class="eyebrow">что забрал с курса</p>
@@ -365,7 +327,7 @@
             <article class="bento__card bento__card--tight">
               <p class="bento__tag">расту</p>
               <h3>Продукт, а не код</h3>
-              <p>Бизнес-анализ + AI-продукты: МАИ + практика АССИСТ+.</p>
+              <p>Бизнес-анализ + AI-продукты: учёба + практика АССИСТ+.</p>
             </article>
             <article class="bento__card bento__card--tight">
               <p class="bento__tag">расту</p>
@@ -376,7 +338,7 @@
         </div>
       </section>
 
-      <!-- 13. Offer -->
+      <!-- 12. Offer -->
       <section class="slide slide--cta" id="cta" data-title="Оффер">
         <div class="slide__inner reveal">
           <p class="eyebrow">мой оффер</p>
@@ -386,20 +348,6 @@
             на которую целится АССИСТ+. Готов приносить его, дорабатывать вместе и учиться у команды
             быстрее любого курса.
           </p>
-          <div class="contact-grid">
-            <a class="contact-card" href="mailto:iliakukava50@gmail.com">
-              <span class="contact-card__label">email</span>
-              <span class="contact-card__value">iliakukava50@gmail.com</span>
-            </a>
-            <a class="contact-card" href="https://t.me/lilihkqw" target="_blank" rel="noopener noreferrer">
-              <span class="contact-card__label">telegram</span>
-              <span class="contact-card__value">@lilihkqw</span>
-            </a>
-            <div class="contact-card">
-              <span class="contact-card__label">репозиторий</span>
-              <span class="contact-card__value">assist-final-project</span>
-            </div>
-          </div>
           <p class="slide__caption">Спасибо команде АССИСТ+ за курс. Давайте строить продукт вместе.</p>
         </div>
       </section>
