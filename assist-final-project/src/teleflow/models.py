@@ -66,7 +66,10 @@ class AppConfig:
     themes: list[str]
     theme_dirs: dict[str, str]
     data_dir: str
+    dedupe_text_max_chars: int
+    list_entries_limit: int
     write_max_files: int
     write_max_total_chars: int
+    write_styles: dict[str, str]
     output_lang: str
     collect_max_messages_per_channel: int

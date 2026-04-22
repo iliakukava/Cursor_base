@@ -8,6 +8,7 @@ from .config import load_config
 from .digest_service import run_digest_once
 from .fsm import ConversationState
 from .handlers import register_handlers
+from .state_store import StateStore
 from .telegram_client import TgUserClient
 
 LOGGER = logging.getLogger(__name__)
@@ -70,7 +71,8 @@ async def run_daemon() -> None:
     tg = TgUserClient(config)
     await tg.connect()
     state = ConversationState()
-    register_handlers(tg, config, state)
+    store = StateStore(config.state_db_path)
+    register_handlers(tg, config, state, store)
     LOGGER.info("Daemon режим запущен. Ожидание входящих сообщений...")
     await tg.client.run_until_disconnected()
 

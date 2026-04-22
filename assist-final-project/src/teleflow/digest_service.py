@@ -3,7 +3,7 @@ from __future__ import annotations
 import logging
 from datetime import datetime, timezone
 
-from .collector import collect_candidates
+from .collector import collect_candidates, dedupe_candidates_by_fingerprint
 from .models import AppConfig
 from .publisher import build_digest_text
 from .ranker import rank_candidates
@@ -30,6 +30,11 @@ async def build_digest(config: AppConfig, tg: TgUserClient) -> str:
         snapshots=snapshots,
         max_messages_per_channel=config.collect_max_messages_per_channel,
     )
+    deduped_candidates = dedupe_candidates_by_fingerprint(candidates, config.dedupe_text_max_chars)
+    dropped = len(candidates) - len(deduped_candidates)
+    if dropped > 0:
+        LOGGER.info("Удалено дубликатов кандидатов: %d", dropped)
+    candidates = deduped_candidates
     annotator = DigestAnnotator(config)
     annotated = annotator.annotate(candidates)
     ranked = rank_candidates(annotated)

@@ -3,6 +3,7 @@ from __future__ import annotations
 import logging
 from datetime import datetime, timedelta, timezone
 
+from .fingerprint import content_fingerprint
 from .filters import is_noisy_text
 from .models import PostCandidate
 from .telegram_client import ChannelInboxSnapshot, SourceChannel, TgUserClient
@@ -85,4 +86,18 @@ async def collect_candidates(
 
     LOGGER.info("Итого собранных кандидатов: %d", len(items))
     return items
+
+
+def dedupe_candidates_by_fingerprint(
+    candidates: list[PostCandidate], dedupe_text_max_chars: int
+) -> list[PostCandidate]:
+    seen: set[str] = set()
+    unique: list[PostCandidate] = []
+    for item in candidates:
+        fingerprint = content_fingerprint(item.text, dedupe_text_max_chars)
+        if fingerprint in seen:
+            continue
+        seen.add(fingerprint)
+        unique.append(item)
+    return unique
 
