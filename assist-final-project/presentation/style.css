@@ -1,18 +1,28 @@
 /* TeleFlow pitch deck — static HTML, scroll-snap */
 
 :root {
-  --bg-deep: #05070f;
-  --bg-slide: #0b1224;
-  --text: #eff3ff;
-  --text-muted: #a8b2ce;
-  --accent: #7f86ff;
-  --accent-dim: #5b67e6;
-  --accent-cyan: #4fe3ff;
-  --border: rgba(127, 134, 255, 0.24);
-  --glow: rgba(127, 134, 255, 0.16);
+  /* Глубокий синий, без фиолетового «AI-неона» */
+  --bg-void: #02040a;
+  --bg-deep: #050a14;
+  --bg-elevated: #0c1424;
+  --bg-card: rgba(12, 22, 42, 0.72);
+  --text: #e9eef8;
+  --text-muted: #8b96ae;
+  --text-faint: #5c667c;
+  /* Один спокойный акцент — ледяной синий */
+  --accent: #7eb3ff;
+  --accent-dim: #5a8ab8;
+  --accent-soft: rgba(126, 179, 255, 0.14);
+  --accent-line: rgba(126, 179, 255, 0.35);
+  --border: rgba(255, 255, 255, 0.07);
+  --border-strong: rgba(126, 179, 255, 0.2);
   --font-sans: "DM Sans", system-ui, sans-serif;
+  --font-display: "Fraunces", Georgia, "Times New Roman", serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
   --nav-w: 3rem;
+  --radius-lg: 20px;
+  --radius-md: 14px;
+  --shadow-soft: 0 24px 48px rgba(0, 0, 0, 0.45);
 }
 
 *,
@@ -29,14 +39,17 @@ body {
   margin: 0;
   min-height: 100vh;
   font-family: var(--font-sans);
-  font-size: clamp(1rem, 2vw, 1.25rem);
-  line-height: 1.55;
+  font-size: clamp(1rem, 1.35vw, 1.125rem);
+  line-height: 1.6;
+  font-weight: 400;
+  letter-spacing: -0.01em;
   color: var(--text);
-  background: var(--bg-deep);
+  background-color: var(--bg-void);
   background-image:
-    radial-gradient(ellipse 120% 90% at 45% -45%, rgba(127, 134, 255, 0.2), transparent),
-    radial-gradient(ellipse 85% 65% at 100% -20%, rgba(79, 227, 255, 0.14), transparent),
-    linear-gradient(180deg, #080c19 0%, var(--bg-deep) 38%);
+    radial-gradient(ellipse 100% 80% at 0% 0%, rgba(28, 48, 88, 0.45) 0%, transparent 52%),
+    radial-gradient(ellipse 70% 50% at 100% 100%, rgba(18, 36, 68, 0.35) 0%, transparent 50%),
+    linear-gradient(165deg, var(--bg-deep) 0%, var(--bg-void) 45%, #020308 100%);
+  -webkit-font-smoothing: antialiased;
 }
 
 .theme-spline::before {
@@ -44,7 +57,7 @@ body {
   position: fixed;
   inset: 0;
   z-index: -2;
-  background: radial-gradient(circle at 30% 20%, rgba(148, 98, 255, 0.14), transparent 45%);
+  background: radial-gradient(ellipse 55% 40% at 78% 8%, rgba(40, 72, 120, 0.22), transparent 55%);
   pointer-events: none;
 }
 
@@ -56,76 +69,50 @@ body {
   pointer-events: none;
 }
 
+/* Два мягких световых пятна — без зерна и без «кислотных» цветов */
 .spline-orb {
   position: absolute;
   border-radius: 999px;
-  filter: blur(48px);
-  opacity: 0.65;
+  filter: blur(64px);
+  opacity: 0.38;
   will-change: transform;
 }
 
 .spline-orb--a {
-  width: clamp(220px, 36vw, 480px);
-  height: clamp(220px, 36vw, 480px);
-  left: -8%;
-  top: 4%;
-  background: radial-gradient(circle at 35% 30%, rgba(134, 84, 255, 0.95), rgba(34, 45, 112, 0.15) 70%);
-  animation: splineFloatA 17s ease-in-out infinite;
+  width: clamp(260px, 42vw, 520px);
+  height: clamp(260px, 42vw, 520px);
+  left: -12%;
+  top: 8%;
+  background: radial-gradient(circle at 40% 40%, rgba(55, 95, 150, 0.55), rgba(12, 22, 42, 0) 72%);
+  animation: splineFloatA 28s ease-in-out infinite;
 }
 
 .spline-orb--b {
-  width: clamp(220px, 34vw, 420px);
-  height: clamp(220px, 34vw, 420px);
-  right: -8%;
-  top: 22%;
-  background: radial-gradient(circle at 40% 40%, rgba(70, 231, 255, 0.9), rgba(18, 37, 82, 0.2) 72%);
-  animation: splineFloatB 19s ease-in-out infinite;
-}
-
-.spline-orb--c {
-  width: clamp(200px, 30vw, 390px);
-  height: clamp(200px, 30vw, 390px);
-  right: 18%;
-  bottom: -14%;
-  background: radial-gradient(circle at 50% 45%, rgba(148, 108, 255, 0.82), rgba(31, 20, 78, 0.18) 70%);
-  animation: splineFloatC 23s ease-in-out infinite;
-}
-
-.spline-noise {
-  position: absolute;
-  inset: 0;
-  opacity: 0.13;
-  background-image: radial-gradient(rgba(255, 255, 255, 0.5) 0.4px, transparent 0.4px);
-  background-size: 3px 3px;
+  width: clamp(240px, 38vw, 460px);
+  height: clamp(240px, 38vw, 460px);
+  right: -10%;
+  bottom: 0%;
+  background: radial-gradient(circle at 55% 55%, rgba(32, 58, 98, 0.5), rgba(8, 14, 28, 0) 70%);
+  animation: splineFloatB 32s ease-in-out infinite;
 }
 
 @keyframes splineFloatA {
   0%,
   100% {
-    transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0) scale(1);
   }
   50% {
-    transform: translate3d(42px, 26px, 0);
+    transform: translate3d(18px, 12px, 0) scale(1.03);
   }
 }
 
 @keyframes splineFloatB {
   0%,
   100% {
-    transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0) scale(1);
   }
   50% {
-    transform: translate3d(-36px, -24px, 0);
-  }
-}
-
-@keyframes splineFloatC {
-  0%,
-  100% {
-    transform: translate3d(0, 0, 0);
-  }
-  50% {
-    transform: translate3d(0, -34px, 0);
+    transform: translate3d(-14px, -10px, 0) scale(1.02);
   }
 }
 
@@ -135,7 +122,7 @@ body {
   top: 0.5rem;
   padding: 0.5rem 1rem;
   background: var(--accent);
-  color: #042;
+  color: var(--bg-void);
   font-weight: 600;
   z-index: 100;
 }
@@ -162,12 +149,17 @@ body {
   align-items: center;
   justify-content: center;
   padding: 2.5rem 1.5rem 2.5rem calc(1.5rem + var(--nav-w));
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid var(--border);
   position: relative;
 }
 
 .slide:nth-child(even) {
-  background: linear-gradient(165deg, rgba(13, 20, 42, 0.84) 0%, rgba(7, 10, 20, 0.78) 100%);
+  background: linear-gradient(
+    168deg,
+    rgba(14, 24, 44, 0.55) 0%,
+    rgba(6, 12, 24, 0.35) 48%,
+    transparent 100%
+  );
 }
 
 /* Встроенная React + Spline сцена (см. presentation-react → npm run build) */
@@ -182,9 +174,9 @@ body {
   width: 100%;
   min-height: min(82vh, 720px);
   border: 0;
-  border-radius: 14px;
-  background: rgba(5, 8, 18, 0.85);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.45);
+  border-radius: var(--radius-md);
+  background: rgba(6, 12, 24, 0.9);
+  box-shadow: var(--shadow-soft);
 }
 
 .slide__embed-caption {
@@ -200,14 +192,12 @@ body {
   max-width: 38rem;
   width: 100%;
   position: relative;
-  background: rgba(10, 14, 30, 0.56);
+  background: var(--bg-card);
   border: 1px solid var(--border);
-  border-radius: 18px;
-  padding: 1.4rem 1.5rem;
-  box-shadow:
-    0 12px 42px rgba(3, 6, 20, 0.6),
-    inset 0 1px 0 rgba(255, 255, 255, 0.06);
-  backdrop-filter: blur(9px);
+  border-radius: var(--radius-md);
+  padding: 1.5rem 1.65rem;
+  box-shadow: var(--shadow-soft), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(14px);
 }
 
 .slide--wide .slide__inner {
@@ -236,14 +226,12 @@ body {
   width: 100%;
   max-width: 58rem;
   min-height: min(56vh, 540px);
-  border-radius: 20px;
+  border-radius: var(--radius-lg);
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(8, 12, 28, 0.78);
-  backdrop-filter: blur(12px);
-  box-shadow:
-    0 24px 64px rgba(0, 0, 0, 0.55),
-    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--border-strong);
+  background: linear-gradient(135deg, rgba(14, 26, 48, 0.88) 0%, rgba(8, 14, 28, 0.92) 100%);
+  backdrop-filter: blur(16px);
+  box-shadow: var(--shadow-soft), inset 0 1px 0 rgba(255, 255, 255, 0.05);
 }
 
 .slide--hero-split .hero-split__text {
@@ -261,7 +249,7 @@ body {
   flex: 1 1 58%;
   min-height: 0;
   position: relative;
-  background: radial-gradient(ellipse 90% 120% at 75% 45%, #121a3a 0%, #03050f 55%, #000008 100%);
+  background: radial-gradient(ellipse 100% 100% at 70% 50%, #152a48 0%, #070f1c 55%, #03060c 100%);
   border-radius: 0;
   box-shadow: none;
 }
@@ -282,50 +270,25 @@ body {
 .slide--hero::before {
   content: "";
   position: absolute;
-  inset: -20%;
-  background:
-    radial-gradient(ellipse 50% 40% at 20% 35%, rgba(127, 134, 255, 0.16), transparent 55%),
-    radial-gradient(ellipse 45% 35% at 85% 65%, rgba(79, 227, 255, 0.13), transparent 50%);
+  inset: 0;
+  background: radial-gradient(ellipse 70% 55% at 18% 40%, rgba(45, 78, 120, 0.2), transparent 58%);
   pointer-events: none;
-  animation: heroAura 18s ease-in-out infinite;
+  opacity: 0.9;
 }
 
 .slide--hero .slide__title {
   position: relative;
   z-index: 1;
-  font-size: clamp(2.75rem, 10vw, 4.5rem);
-  letter-spacing: -0.03em;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(2.75rem, 9vw, 4.25rem);
+  letter-spacing: -0.035em;
+  line-height: 1.02;
   margin: 0.25rem 0 1rem;
-  background: linear-gradient(112deg, #fff 0%, #d7dbff 32%, var(--accent) 58%, var(--accent-cyan) 82%);
-  background-size: 220% auto;
+  background: linear-gradient(165deg, #fff 0%, #c5d6f0 38%, #7a9fd4 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  animation: titleShimmer 10s ease-in-out infinite;
-}
-
-@keyframes heroAura {
-  0%,
-  100% {
-    opacity: 0.85;
-    transform: translate(0, 0) rotate(0deg);
-  }
-
-  50% {
-    opacity: 1;
-    transform: translate(2%, -1%) rotate(1deg);
-  }
-}
-
-@keyframes titleShimmer {
-  0%,
-  100% {
-    background-position: 0% 50%;
-  }
-
-  50% {
-    background-position: 100% 50%;
-  }
 }
 
 .slide--cta .slide__inner {
@@ -337,26 +300,32 @@ body {
 }
 
 h2 {
-  font-size: clamp(1.65rem, 4vw, 2.25rem);
-  font-weight: 700;
-  letter-spacing: -0.02em;
+  font-family: var(--font-display);
+  font-size: clamp(1.55rem, 3.5vw, 2.1rem);
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  line-height: 1.12;
   margin: 0 0 1rem;
-  color: #fff;
+  color: var(--text);
 }
 
 .eyebrow {
-  font-size: 0.85rem;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 500;
   text-transform: uppercase;
-  letter-spacing: 0.12em;
-  color: var(--text-muted);
-  margin: 0 0 0.5rem;
+  letter-spacing: 0.2em;
+  color: var(--text-faint);
+  margin: 0 0 0.65rem;
 }
 
 .slide__lead {
-  font-size: clamp(1.1rem, 2.8vw, 1.35rem);
+  font-size: clamp(1.05rem, 2.2vw, 1.28rem);
+  font-weight: 500;
+  line-height: 1.55;
   color: var(--text-muted);
   margin: 0;
-  max-width: 28rem;
+  max-width: 30rem;
   margin-inline: auto;
 }
 
@@ -392,11 +361,13 @@ h2 {
 
 kbd {
   font-family: var(--font-mono);
-  font-size: 0.75em;
-  padding: 0.15em 0.45em;
+  font-size: 0.72em;
+  font-weight: 500;
+  padding: 0.12em 0.4em;
   border-radius: 4px;
-  background: rgba(103, 122, 255, 0.16);
-  border: 1px solid rgba(165, 182, 255, 0.22);
+  background: var(--accent-soft);
+  border: 1px solid var(--accent-line);
+  color: var(--accent);
 }
 
 .feature-list {
@@ -466,35 +437,37 @@ kbd {
   position: absolute;
   left: 0;
   top: 0.55em;
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
   border-radius: 50%;
   background: var(--accent);
-  box-shadow: 0 0 12px rgba(127, 134, 255, 0.8);
+  opacity: 0.85;
 }
 
 code {
   font-family: var(--font-mono);
-  font-size: 0.88em;
+  font-size: 0.86em;
+  font-weight: 500;
   color: var(--accent);
-  background: rgba(127, 134, 255, 0.15);
-  padding: 0.1em 0.35em;
+  background: var(--accent-soft);
+  padding: 0.08em 0.32em;
   border-radius: 4px;
+  border: 1px solid rgba(126, 179, 255, 0.12);
 }
 
 .placeholder-block {
   padding: 1rem 1.25rem;
-  border-left: 3px solid rgba(79, 227, 255, 0.72);
-  background: rgba(127, 134, 255, 0.12);
-  border-radius: 0 8px 8px 0;
+  border-left: 3px solid var(--accent-line);
+  background: var(--accent-soft);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
 }
 
 /* Flow SVG */
 .flow-diagram {
   margin: 1.5rem 0 0;
   padding: 1rem;
-  background: rgba(7, 10, 26, 0.68);
-  border-radius: 12px;
+  background: rgba(8, 16, 32, 0.65);
+  border-radius: var(--radius-md);
   border: 1px solid var(--border);
   overflow: auto;
 }
@@ -507,10 +480,10 @@ code {
 }
 
 .flow-node rect {
-  fill: rgba(127, 134, 255, 0.18);
-  stroke: var(--border);
-  stroke-width: 1.5;
-  transition: fill 0.35s ease, stroke-color 0.35s ease, filter 0.35s ease;
+  fill: rgba(55, 88, 140, 0.28);
+  stroke: var(--border-strong);
+  stroke-width: 1;
+  transition: fill 0.35s ease, stroke-color 0.35s ease;
 }
 
 .flow-node text {
@@ -527,14 +500,14 @@ code {
 }
 
 .flow-node.is-active rect {
-  fill: rgba(127, 134, 255, 0.38);
-  stroke: var(--accent-cyan);
-  filter: drop-shadow(0 0 14px rgba(79, 227, 255, 0.5));
+  fill: rgba(90, 130, 190, 0.35);
+  stroke: var(--accent);
 }
 
 .flow-diagram svg line {
-  stroke-dasharray: 8 6;
-  animation: flowDash 1.2s linear infinite;
+  stroke: rgba(126, 179, 255, 0.35);
+  stroke-dasharray: 6 8;
+  animation: flowDash 2.8s linear infinite;
 }
 
 @keyframes flowDash {
@@ -550,10 +523,10 @@ code {
   top: 0;
   left: 0;
   right: 0;
-  height: 3px;
+  height: 2px;
   z-index: 60;
   pointer-events: none;
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.04);
 }
 
 .deck-progress::after {
@@ -563,8 +536,7 @@ code {
   width: 100%;
   transform: scaleX(var(--deck-progress));
   transform-origin: left center;
-  background: linear-gradient(90deg, #6a70ff, var(--accent), var(--accent-cyan));
-  box-shadow: 0 0 16px rgba(127, 134, 255, 0.45);
+  background: linear-gradient(90deg, #5a8fd4 0%, var(--accent) 100%);
   transition: transform 0.1s linear;
 }
 
@@ -594,7 +566,7 @@ code {
   align-items: center;
   justify-content: center;
   padding: 0.5rem;
-  background: linear-gradient(90deg, rgba(4, 8, 23, 0.62), transparent);
+  background: linear-gradient(90deg, rgba(4, 10, 22, 0.75), transparent);
   pointer-events: none;
 }
 
@@ -621,14 +593,14 @@ code {
 }
 
 .deck-nav__list a:hover {
-  background: rgba(127, 134, 255, 0.58);
-  transform: scale(1.15);
+  background: rgba(126, 179, 255, 0.35);
+  transform: scale(1.12);
 }
 
 .deck-nav__list a.is-active {
   background: var(--accent);
-  box-shadow: 0 0 14px rgba(127, 134, 255, 0.8);
-  border-color: var(--accent);
+  border-color: rgba(255, 255, 255, 0.35);
+  box-shadow: 0 0 0 1px rgba(126, 179, 255, 0.35);
 }
 
 @media (max-width: 640px) {
@@ -683,7 +655,7 @@ code {
     justify-content: center;
     max-width: 90vw;
     padding: 0.35rem 0.5rem;
-    background: rgba(9, 13, 31, 0.9);
+    background: rgba(8, 14, 28, 0.92);
     border-radius: 999px;
     border: 1px solid var(--border);
   }
@@ -711,16 +683,6 @@ code {
     animation: none;
   }
 
-  .slide--hero::before,
-  .slide--hero .slide__title {
-    animation: none;
-  }
-
-  .slide--hero .slide__title {
-    background: linear-gradient(135deg, #fff 0%, var(--accent) 100%);
-    background-size: 100% auto;
-  }
-
   .flow-node rect {
     transition: none;
   }
@@ -730,9 +692,7 @@ code {
     stroke-dasharray: none;
   }
 
-  .spline-orb,
-  .slide--hero::before,
-  .slide--hero .slide__title {
+  .spline-orb {
     animation: none;
   }
 }
