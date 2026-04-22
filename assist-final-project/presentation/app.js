@@ -5,6 +5,7 @@
   const deck = document.getElementById("deck");
   const slides = deck ? Array.from(deck.querySelectorAll(".slide")) : [];
   const navList = document.querySelector(".deck-nav__list");
+  const progressEl = document.getElementById("deck-progress");
 
   function buildNav() {
     if (!navList || slides.length === 0) return;
@@ -144,14 +145,32 @@
     }
   });
 
+  function updateDeckProgress() {
+    if (!deck || !progressEl) return;
+    const max = deck.scrollHeight - deck.clientHeight;
+    const ratio = max <= 0 ? 1 : Math.min(1, Math.max(0, deck.scrollTop / max));
+    progressEl.style.setProperty("--deck-progress", String(ratio));
+    const pct = Math.round(ratio * 100);
+    progressEl.setAttribute("aria-valuenow", String(pct));
+  }
+
   if (deck) {
-    deck.addEventListener("scroll", () => {
-      window.requestAnimationFrame(updateNavActive);
-    });
+    deck.addEventListener(
+      "scroll",
+      () => {
+        window.requestAnimationFrame(() => {
+          updateNavActive();
+          updateDeckProgress();
+        });
+      },
+      { passive: true }
+    );
   }
 
   buildNav();
   initReveals();
   initFlowHighlight();
   updateNavActive();
+  updateDeckProgress();
+  window.addEventListener("resize", () => window.requestAnimationFrame(updateDeckProgress));
 })();
