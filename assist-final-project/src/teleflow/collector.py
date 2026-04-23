@@ -32,6 +32,7 @@ async def collect_candidates(
     keywords: list[str],
     snapshots: dict[int, ChannelInboxSnapshot],
     max_messages_per_channel: int,
+    include_all_recent: bool = False,
 ) -> list[PostCandidate]:
     since_dt = datetime.now(tz=timezone.utc) - timedelta(hours=lookback_hours)
     items: list[PostCandidate] = []
@@ -41,19 +42,29 @@ async def collect_candidates(
         if snapshot is None:
             LOGGER.warning("Snapshot непрочитанных не найден для канала %s", channel.title)
             continue
-        if snapshot.unread_count <= 0:
-            LOGGER.info("Канал %s: непрочитанных нет", channel.title)
-            continue
-        scan_limit = max_messages_per_channel
-        if snapshot.unread_count > 0:
-            scan_limit = min(scan_limit, snapshot.unread_count)
+        if include_all_recent:
+            scan_limit = max_messages_per_channel
+        else:
+            if snapshot.unread_count <= 0:
+                LOGGER.info("Канал %s: непрочитанных нет", channel.title)
+                continue
+            scan_limit = min(max_messages_per_channel, snapshot.unread_count)
         count_before = len(items)
-        async for msg in tg.iter_unread_messages(
-            channel.entity,
-            snapshot.read_inbox_max_id,
-            since_dt,
-            max_messages=scan_limit,
-        ):
+        if include_all_recent:
+            message_iter = tg.iter_recent_messages(
+                channel.entity,
+                since_dt,
+                max_messages=scan_limit,
+            )
+        else:
+            message_iter = tg.iter_unread_messages(
+                channel.entity,
+                snapshot.read_inbox_max_id,
+                since_dt,
+                max_messages=scan_limit,
+            )
+
+        async for msg in message_iter:
             text = (msg.message or "").strip()
             if len(text) < 120:
                 continue

@@ -30,12 +30,14 @@ def _resolve_once_target(config) -> str | int:
 
 
 def _log_startup(config) -> None:
+    model_name = config.openrouter_model if config.llm_provider == "openrouter" else config.yandex_model
     LOGGER.info(
-        "Startup: proxy=%s type=%s dry_run=%s openrouter=%s timeout=%ss annotate_budget=%ss connect_total=%ss rpc_timeout=%ss run_once_budget=%ss",
+        "Startup: proxy=%s type=%s dry_run=%s llm_provider=%s model=%s timeout=%ss annotate_budget=%ss connect_total=%ss rpc_timeout=%ss run_once_budget=%ss",
         "on" if config.tg_proxy_enabled else "off",
         config.tg_proxy_type,
         config.dry_run,
-        config.openrouter_model,
+        config.llm_provider,
+        model_name,
         config.openrouter_timeout_sec,
         config.openrouter_annotate_budget_sec,
         config.tg_connect_total_sec,

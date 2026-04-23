@@ -17,6 +17,7 @@ from .knowledge import (
     move_entry_by_id,
     normalize_entry_id,
     read_theme_entries,
+    read_all_entries,
     resolve_theme,
     save_knowledge_entry,
     theme_choices,
@@ -149,20 +150,26 @@ def register_handlers(
             return
 
         if lowered.startswith("/write"):
-            theme, style_key, error_text = _parse_write_args(raw_text, config)
+            topic, source_theme, error_text = _parse_write_args(raw_text, config)
             if error_text:
                 await event.reply(error_text, parse_mode="md")
                 return
-            if not theme:
-                await event.reply(_theme_prompt(config, "Тема не распознана. Выбери из списка:"))
+            if not topic:
+                await event.reply("Укажи тему: `/write ai-агенты для бизнеса`", parse_mode="md")
                 return
-            entries = read_theme_entries(config, theme)
+            if source_theme:
+                entries = read_theme_entries(config, source_theme)
+            else:
+                entries = read_all_entries(config)
             if not entries:
-                await event.reply(f"По теме '{theme}' пока нет сохраненных постов.")
+                if source_theme:
+                    await event.reply(f"В теме '{source_theme}' пока нет сохраненных постов.")
+                else:
+                    await event.reply("В базе пока нет сохраненных постов. Сначала добавь материалы через forward.")
                 return
-            style_suffix = f" (стиль: {style_key})" if style_key else ""
-            await event.reply(f"Генерирую пост по теме '{theme}'{style_suffix}...")
-            post_text = synthesize_post(config, theme, entries, style_key=style_key)
+            scope_text = f" в теме базы '{source_theme}'" if source_theme else " по всей базе"
+            await event.reply(f"Генерирую пост на тему '{topic}'{scope_text}...")
+            post_text = synthesize_post(config, topic, entries)
             await tg.send_text(sender_id, post_text)
             return
 
@@ -204,32 +211,46 @@ def register_handlers(
             await event.reply(_theme_prompt(config, "Куда отнести этот пост?"))
             return
 
+        if lowered.startswith("/help"):
+            await event.reply(_full_help_text(config))
+            return
+
         if raw_text.startswith("/"):
-            await event.reply(_help_text(config))
+            await event.reply(_brief_help_text())
             return
         if raw_text:
-            await event.reply(_help_text(config))
+            await event.reply(_brief_help_text())
 
 
-def _help_text(config: AppConfig) -> str:
-    folders = ", ".join(config.source_folder_names) or "—"
-    themes = ", ".join(theme_choices(config)) or "—"
-    target = config.target_channel or "не задан (см. TARGET_CHANNEL в .env)"
+def _brief_help_text() -> str:
     return (
-        "Команда или сообщение не распознаны.\n\n"
-        "Что можно сделать:\n"
+        "Не понял команду 👀\n\n"
+        "Вот с чего обычно начинают:\n"
+        "• /digest — собрать дайджест\n"
+        "• /write <тема поста> [--theme=<тема базы>] — сгенерировать пост\n"
+        "• /stats — посмотреть, сколько материалов в базе\n"
+        "• /list <тема> — открыть последние записи по теме\n\n"
+        "Примеры:\n"
+        "• /write ai-агенты для бизнеса\n"
+        "• /write контент-стратегия --theme=бизнес\n\n"
+        "Полный список команд: /help"
+    )
+
+
+def _full_help_text(config: AppConfig) -> str:
+    return (
+        "Полный список команд:\n"
         "• /digest — собрать дайджест из непрочитанного по папкам Telegram\n"
         "• /stats — сколько постов сохранено по каждой теме (THEMES)\n"
         "• /list <тема> — показать последние записи темы (id + хвост текста)\n"
         "• /rm <id> — удалить запись по id\n"
         "• /mv <id> <новая тема> — перенести запись в другую тему\n"
         "• /undo — отменить последнее сохранение (ваше)\n"
-        "• /write <тема> [--style=<ключ>] — сгенерировать пост из материалов темы\n"
+        "• /write <тема поста> [--theme=<тема базы>] — генерация (глобально или внутри темы базы)\n"
         "• Перешлите сюда текстовый пост (forward), чтобы добавить его в базу по теме\n\n"
-        f"Папки для дайджеста (SOURCE_FOLDER_NAMES): {folders}\n"
-        f"Темы для базы и /write (THEMES): {themes}\n"
-        f"Канал для отправки (TARGET_CHANNEL): {target}\n"
-        f"Доступные стили /write: {_styles_hint(config)}\n"
+        "Примеры /write:\n"
+        "• /write ai-агенты для бизнеса\n"
+        "• /write ai-агенты для бизнеса --theme=бизнес\n"
     )
 
 
@@ -262,57 +283,43 @@ def _extract_source_link(message) -> str | None:
     return None
 
 
-def _styles_hint(config: AppConfig) -> str:
-    if not config.write_styles:
-        return "нет (используется базовый стиль)"
-    return ", ".join(sorted(config.write_styles.keys()))
-
-
 def _parse_write_args(raw_text: str, config: AppConfig) -> tuple[str | None, str | None, str | None]:
     payload = raw_text[len("/write") :].strip()
     if not payload:
-        return None, None, "Укажи тему: `/write спорт`"
+        return None, None, "Укажи тему: `/write ai-агенты для бизнеса`"
+
     try:
         tokens = shlex.split(payload)
     except ValueError:
-        return None, None, "Не удалось разобрать аргументы. Используй: `/write <тема> --style=<ключ>`"
+        return None, None, "Не удалось разобрать аргументы. Используй: `/write <тема поста> [--theme=<тема базы>]`"
 
-    style_key: str | None = None
-    theme_tokens: list[str] = []
+    source_theme_raw: str | None = None
+    topic_tokens: list[str] = []
     idx = 0
     while idx < len(tokens):
         token = tokens[idx]
-        if token.startswith("--style="):
-            style_key = token.split("=", 1)[1].strip().lower()
+        if token.startswith("--theme="):
+            source_theme_raw = token.split("=", 1)[1].strip()
             idx += 1
             continue
-        if token == "--style":
+        if token == "--theme":
             if idx + 1 >= len(tokens):
-                return None, None, "После `--style` нужен ключ стиля."
-            style_key = tokens[idx + 1].strip().lower()
+                return None, None, "После `--theme` укажи тему базы."
+            source_theme_raw = tokens[idx + 1].strip()
             idx += 2
             continue
-        theme_tokens.append(token)
+        topic_tokens.append(token)
         idx += 1
 
-    theme_raw = " ".join(theme_tokens).strip()
-    theme = resolve_theme(config, theme_raw) if theme_raw else None
+    topic = " ".join(topic_tokens).strip()
+    if not topic:
+        return None, None, "Укажи тему поста: `/write ai-агенты для бизнеса --theme=бизнес`"
 
-    if not theme and not style_key and len(theme_tokens) > 1:
-        candidate_style = theme_tokens[-1].strip().lower()
-        if candidate_style in config.write_styles:
-            style_key = candidate_style
-            theme = resolve_theme(config, " ".join(theme_tokens[:-1]))
+    source_theme: str | None = None
+    if source_theme_raw:
+        source_theme = resolve_theme(config, source_theme_raw)
+        if not source_theme:
+            return None, None, _theme_prompt(config, "Тема базы в `--theme` не распознана. Выбери из списка:")
 
-    if style_key and style_key not in config.write_styles:
-        return (
-            None,
-            None,
-            f"Стиль `{style_key}` не найден. Доступно: {_styles_hint(config)}",
-        )
-
-    if not theme:
-        return None, style_key, _theme_prompt(config, "Тема не распознана. Выбери из списка:")
-
-    return theme, style_key, None
+    return topic, source_theme, None
 

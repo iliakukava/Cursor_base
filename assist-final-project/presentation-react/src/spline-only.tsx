@@ -9,7 +9,7 @@ const SPLINE_SCENE = 'https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splineco
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <div className="h-[100dvh] w-full bg-black">
+    <div className="relative h-[100dvh] w-full overflow-hidden bg-black">
       <SplineScene scene={SPLINE_SCENE} className="h-full w-full" />
     </div>
   </StrictMode>

@@ -218,6 +218,14 @@ def read_theme_entries(config: AppConfig, theme: str) -> list[dict[str, Any]]:
     return entries
 
 
+def read_all_entries(config: AppConfig) -> list[dict[str, Any]]:
+    entries: list[dict[str, Any]] = []
+    for theme in theme_choices(config):
+        entries.extend(read_theme_entries(config, theme))
+    entries.sort(key=lambda item: item.get("created_at", ""), reverse=True)
+    return entries
+
+
 def list_theme_entries_preview(config: AppConfig, theme: str, limit: int) -> list[EntryPreview]:
     directory = theme_knowledge_dir(config, theme)
     if not directory.exists():

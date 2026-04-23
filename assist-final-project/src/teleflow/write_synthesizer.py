@@ -2,18 +2,19 @@ from __future__ import annotations
 
 import json
 import logging
+import re
 from typing import Any
 
 from .models import AppConfig
-from .openrouter import openrouter_chat
+from .openrouter import llm_chat
 
 LOGGER = logging.getLogger(__name__)
 
 
 def synthesize_post(
-    config: AppConfig, theme: str, entries: list[dict[str, Any]], style_key: str | None = None
+    config: AppConfig, topic: str, entries: list[dict[str, Any]]
 ) -> str:
-    selected = entries[: config.write_max_files]
+    selected = _select_relevant_entries(topic, entries)[: config.write_max_files]
     limited: list[dict[str, str]] = []
     total_chars = 0
     for item in selected:
@@ -31,16 +32,15 @@ def synthesize_post(
         total_chars += len(text)
 
     if not limited:
-        return f"По теме '{theme}' нет текстовых материалов для генерации."
+        return f"Недостаточно контекста: в сохранённых постах нет материалов по теме '{topic}'."
 
-    style_overlay = ""
-    if style_key:
-        style_overlay = config.write_styles.get(style_key.lower(), "")
-
-    prompt = _build_prompt(theme, limited, config.output_lang, style_overlay)
-    out = openrouter_chat(
-        api_key=config.openrouter_api_key,
-        model=config.openrouter_model,
+    prompt = _build_prompt(topic, limited, config.output_lang)
+    api_key = config.openrouter_api_key if config.llm_provider == "openrouter" else config.yandex_api_key
+    model = config.openrouter_model if config.llm_provider == "openrouter" else config.yandex_model
+    out = llm_chat(
+        provider=config.llm_provider,
+        api_key=api_key,
+        model=model,
         system=(
             "Ты редактор Telegram-постов. Пиши цельный связный текст по материалам пользователя. "
             "Без списка источников в конце, без выдуманных фактов."
@@ -49,15 +49,16 @@ def synthesize_post(
         timeout_sec=config.openrouter_timeout_sec,
         max_tokens=min(config.openrouter_max_tokens, 8192),
         temperature=0.35,
+        yandex_folder_id=config.yandex_folder_id,
     )
     if out:
         return out
-    LOGGER.warning("OpenRouter не вернул текст для /write.")
-    return _fallback_text(theme, limited)
+    LOGGER.warning("LLM не вернул текст для /write.")
+    return _fallback_text(topic, limited)
 
 
 def _build_prompt(
-    theme: str, items: list[dict[str, str]], output_lang: str, style_overlay: str
+    topic: str, items: list[dict[str, str]], output_lang: str
 ) -> str:
     instructions = (
         "Ты пишешь авторский Telegram-пост на основе подборки материалов. "
@@ -66,22 +67,43 @@ def _build_prompt(
         "Стиль: живой, цельный, без списков источников в конце."
     )
     lang_hint = "Пиши полностью на русском языке." if output_lang == "ru" else ""
-    style_hint = f"Дополнительный стиль:\n{style_overlay}\n" if style_overlay else ""
     payload = json.dumps(items, ensure_ascii=False)
     return (
         f"{instructions}\n{lang_hint}\n"
-        f"Тема: {theme}\n"
-        f"{style_hint}"
+        f"Тема: {topic}\n"
         "Ниже материалы:\n"
         f"{payload}\n\n"
         "Верни только готовый текст поста."
     )
 
 
-def _fallback_text(theme: str, items: list[dict[str, str]]) -> str:
+def _fallback_text(topic: str, items: list[dict[str, str]]) -> str:
     first = items[0]["text"][:900]
     return (
-        f"Черновик по теме '{theme}':\n\n"
+        f"Черновик по теме '{topic}':\n\n"
         f"{first}\n\n"
         "OpenRouter не вернул ответ — упрощённый fallback."
     )
+
+
+def _tokenize(text: str) -> set[str]:
+    return {token for token in re.findall(r"[a-zA-Zа-яА-Я0-9]{3,}", text.lower())}
+
+
+def _select_relevant_entries(topic: str, entries: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    topic_tokens = _tokenize(topic)
+    if not topic_tokens:
+        return []
+
+    scored: list[tuple[int, dict[str, Any]]] = []
+    for entry in entries:
+        text = str(entry.get("text", "")).strip()
+        if not text:
+            continue
+        overlap = len(topic_tokens & _tokenize(text))
+        if overlap <= 0:
+            continue
+        scored.append((overlap, entry))
+
+    scored.sort(key=lambda item: (item[0], str(item[1].get("created_at", ""))), reverse=True)
+    return [entry for _, entry in scored]

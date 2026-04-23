@@ -1,28 +1,30 @@
 /* TeleFlow pitch deck — static HTML, scroll-snap */
 
 :root {
-  /* Глубокий синий, без фиолетового «AI-неона» */
-  --bg-void: #02040a;
-  --bg-deep: #050a14;
-  --bg-elevated: #0c1424;
-  --bg-card: rgba(12, 22, 42, 0.72);
-  --text: #e9eef8;
-  --text-muted: #8b96ae;
-  --text-faint: #5c667c;
-  /* Один спокойный акцент — ледяной синий */
+  /* Кинематографичный тёмный + editorial линии (без копирования чужих брендов) */
+  --bg-void: #03050c;
+  --bg-deep: #060a16;
+  --bg-elevated: #0a1222;
+  --bg-card: rgba(10, 18, 36, 0.78);
+  --text: #f0f3fa;
+  --text-muted: #8a95ad;
+  --text-faint: #5a6478;
   --accent: #7eb3ff;
   --accent-dim: #5a8ab8;
-  --accent-soft: rgba(126, 179, 255, 0.14);
-  --accent-line: rgba(126, 179, 255, 0.35);
-  --border: rgba(255, 255, 255, 0.07);
-  --border-strong: rgba(126, 179, 255, 0.2);
+  --accent-soft: rgba(126, 179, 255, 0.12);
+  --accent-line: rgba(126, 179, 255, 0.32);
+  /* Редкий «неон» как акцент UI — навигация, линии */
+  --accent-cinema: #5dffc8;
+  --border: rgba(255, 255, 255, 0.065);
+  --border-strong: rgba(255, 255, 255, 0.12);
   --font-sans: "DM Sans", system-ui, sans-serif;
   --font-display: "Fraunces", Georgia, "Times New Roman", serif;
+  --font-headline: "Oswald", "Arial Narrow", system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
   --nav-w: 3rem;
-  --radius-lg: 20px;
-  --radius-md: 14px;
-  --shadow-soft: 0 24px 48px rgba(0, 0, 0, 0.45);
+  --radius-lg: 18px;
+  --radius-md: 12px;
+  --shadow-soft: 0 28px 56px rgba(0, 0, 0, 0.55);
 }
 
 *,
@@ -46,10 +48,33 @@ body {
   color: var(--text);
   background-color: var(--bg-void);
   background-image:
-    radial-gradient(ellipse 100% 80% at 0% 0%, rgba(28, 48, 88, 0.45) 0%, transparent 52%),
-    radial-gradient(ellipse 70% 50% at 100% 100%, rgba(18, 36, 68, 0.35) 0%, transparent 50%),
-    linear-gradient(165deg, var(--bg-deep) 0%, var(--bg-void) 45%, #020308 100%);
+    /* Абстрактные «волны» линий — как в тёмных шаблонах презентаций */
+    repeating-linear-gradient(
+      118deg,
+      transparent 0 36px,
+      rgba(120, 175, 255, 0.028) 36px 37px
+    ),
+    repeating-linear-gradient(
+      -108deg,
+      transparent 0 52px,
+      rgba(255, 255, 255, 0.018) 52px 53px
+    ),
+    radial-gradient(ellipse 100% 75% at 0% 0%, rgba(26, 52, 96, 0.38) 0%, transparent 55%),
+    radial-gradient(ellipse 65% 45% at 100% 100%, rgba(14, 32, 58, 0.4) 0%, transparent 52%),
+    linear-gradient(168deg, var(--bg-deep) 0%, var(--bg-void) 48%, #020308 100%);
   -webkit-font-smoothing: antialiased;
+}
+
+/* Лёгкая зернистость — как плёнка, без шума */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+  mix-blend-mode: overlay;
 }
 
 .theme-spline::before {
@@ -57,7 +82,9 @@ body {
   position: fixed;
   inset: 0;
   z-index: -2;
-  background: radial-gradient(ellipse 55% 40% at 78% 8%, rgba(40, 72, 120, 0.22), transparent 55%);
+  background:
+    radial-gradient(ellipse 50% 42% at 82% 12%, rgba(55, 110, 160, 0.18), transparent 58%),
+    radial-gradient(ellipse 40% 35% at 10% 88%, rgba(40, 90, 140, 0.12), transparent 50%);
   pointer-events: none;
 }
 
@@ -124,7 +151,7 @@ body {
   background: var(--accent);
   color: var(--bg-void);
   font-weight: 600;
-  z-index: 100;
+  z-index: 120;
 }
 
 .skip-link:focus {
@@ -134,10 +161,12 @@ body {
 /* Full-height scroll snap deck */
 .deck {
   position: relative;
+  z-index: 1;
   height: 100vh;
   overflow-y: auto;
   scroll-snap-type: y mandatory;
   scroll-padding-top: 0;
+  counter-reset: deck-slide;
 }
 
 .slide {
@@ -146,11 +175,54 @@ body {
   scroll-snap-stop: always;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: stretch;
   justify-content: center;
-  padding: 2.5rem 1.5rem 2.5rem calc(1.5rem + var(--nav-w));
+  padding: clamp(1rem, 2.5vh, 1.75rem) max(1rem, 3vw) clamp(1rem, 2.5vh, 1.75rem) calc(var(--nav-w) + max(0.75rem, 2vw));
   border-bottom: 1px solid var(--border);
   position: relative;
+}
+
+/* Тихая «сцена»: рамка и лёгкий залив — пустоты вокруг контента выглядят намеренно */
+.slide:not(.slide--hero)::before {
+  content: "";
+  position: absolute;
+  inset: clamp(0.65rem, 1.8vmin, 1.35rem);
+  left: calc(var(--nav-w) + 0.5rem);
+  border-radius: clamp(20px, 2.8vw, 32px);
+  border: 1px solid rgba(255, 255, 255, 0.055);
+  background: linear-gradient(155deg, rgba(14, 26, 48, 0.42) 0%, rgba(6, 12, 22, 0.18) 42%, transparent 78%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Крупный номер слайда — как в печатном lookbook, без шума */
+.slide:not(.slide--hero) {
+  counter-increment: deck-slide;
+}
+
+.slide:not(.slide--hero)::after {
+  content: counter(deck-slide, decimal-leading-zero);
+  position: absolute;
+  right: max(1.25rem, 3.5vw);
+  bottom: max(1.25rem, 3vh);
+  font-family: var(--font-headline);
+  font-size: clamp(3.5rem, 12vw, 9rem);
+  font-weight: 600;
+  font-style: normal;
+  line-height: 1;
+  color: rgba(233, 238, 248, 0.04);
+  letter-spacing: 0.02em;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.slide > * {
+  position: relative;
+  z-index: 1;
+}
+
+.slide--hero.slide--hero-split {
+  align-items: center;
 }
 
 .slide:nth-child(even) {
@@ -191,21 +263,65 @@ body {
 .slide__inner {
   max-width: 38rem;
   width: 100%;
+  margin-inline: auto;
   position: relative;
   background: var(--bg-card);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
-  padding: 1.5rem 1.65rem;
+  padding: 1.75rem 1.65rem 1.5rem;
   box-shadow: var(--shadow-soft), inset 0 1px 0 rgba(255, 255, 255, 0.04);
   backdrop-filter: blur(14px);
 }
 
+.slide__inner::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 1.25rem;
+  right: 1.25rem;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.14) 20%, rgba(255, 255, 255, 0.14) 80%, transparent);
+  border-radius: 1px;
+  pointer-events: none;
+}
+
+/* Контентные слайды: шире и выше — не «плашка по центру пустоты» */
+.slide:not(.slide--hero) .slide__inner {
+  max-width: min(92vw, 52rem);
+  min-height: min(86vh, 920px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: clamp(2rem, 4.5vw, 3.25rem) clamp(2rem, 5vw, 3.5rem);
+  border-radius: clamp(16px, 2vw, 22px);
+}
+
 .slide--wide .slide__inner {
-  max-width: 48rem;
+  max-width: min(95vw, 72rem);
+}
+
+.slide.slide--wide:not(.slide--hero) .slide__inner {
+  min-height: min(88vh, 960px);
 }
 
 .slide--hero .slide__inner {
   text-align: center;
+}
+
+.slide--cta .slide__inner {
+  min-height: min(70vh, 560px);
+  max-width: min(92vw, 42rem);
+  text-align: center;
+  align-items: center;
+}
+
+.slide--cta .slide__inner > * {
+  max-width: 100%;
+}
+
+.slide--cta .slide__lead {
+  margin-inline: 0;
+  max-width: 34rem;
 }
 
 /* Титул: одна общая панель — текст + Spline без «второго окна» */
@@ -252,6 +368,7 @@ body {
   background: radial-gradient(ellipse 100% 100% at 70% 50%, #152a48 0%, #070f1c 55%, #03060c 100%);
   border-radius: 0;
   box-shadow: none;
+  cursor: crosshair;
 }
 
 .slide--hero-split .hero-split__iframe {
@@ -261,6 +378,10 @@ body {
   min-height: 100%;
   border: 0;
   background: transparent;
+}
+
+.slide--hero-split .hero-split__spline:hover .hero-split__iframe {
+  filter: brightness(1.04) saturate(1.05);
 }
 
 .slide--hero {
@@ -300,21 +421,37 @@ body {
 }
 
 h2 {
-  font-family: var(--font-display);
+  font-family: var(--font-headline);
   font-size: clamp(1.55rem, 3.5vw, 2.1rem);
-  font-weight: 600;
-  letter-spacing: -0.025em;
-  line-height: 1.12;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  line-height: 1.15;
   margin: 0 0 1rem;
   color: var(--text);
+  text-transform: uppercase;
+}
+
+.slide:not(.slide--hero) h2 {
+  font-size: clamp(1.75rem, 3.8vw, 2.75rem);
+  line-height: 1.12;
+  margin-bottom: clamp(1rem, 2.5vw, 1.5rem);
+  max-width: 18em;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+}
+
+.slide--cta h2 {
+  font-size: clamp(2.25rem, 5vw, 3.5rem);
+  max-width: none;
+  letter-spacing: 0.12em;
 }
 
 .eyebrow {
-  font-family: var(--font-mono);
-  font-size: 0.68rem;
+  font-family: var(--font-headline);
+  font-size: 0.72rem;
   font-weight: 500;
   text-transform: uppercase;
-  letter-spacing: 0.2em;
+  letter-spacing: 0.28em;
   color: var(--text-faint);
   margin: 0 0 0.65rem;
 }
@@ -334,6 +471,101 @@ h2 {
   color: var(--text-muted);
 }
 
+.slide:not(.slide--hero) .slide__text {
+  font-size: clamp(1.12rem, 2.1vw, 1.38rem);
+  line-height: 1.68;
+  max-width: 38rem;
+  letter-spacing: -0.012em;
+}
+
+/* Слайд: текст + иллюстрация (SVG) */
+.slide__inner--split {
+  max-width: min(95vw, 64rem);
+  width: 100%;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, min(42vw, 20rem));
+  gap: clamp(1.25rem, 3vw, 2rem);
+  align-items: center;
+  overflow: hidden;
+}
+
+.slide__col {
+  min-width: 0;
+}
+
+.slide-illu {
+  margin: 0;
+  min-width: 0;
+  max-width: 100%;
+  padding: clamp(0.5rem, 1.5vw, 1rem);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  background: rgba(8, 16, 32, 0.55);
+  max-height: min(48vh, 360px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.slide-illu svg {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  max-height: min(44vh, 320px);
+  color: var(--accent-dim);
+  object-fit: contain;
+}
+
+.slide-illu--wide {
+  max-height: none;
+  max-width: 100%;
+}
+
+.slide-illu--problem svg {
+  max-height: min(40vh, 280px);
+}
+
+.slide-illu--problem {
+  max-height: none;
+  padding: 0.5rem;
+  border-radius: clamp(14px, 1.8vw, 18px);
+  background: linear-gradient(160deg, rgba(18, 30, 54, 0.9) 0%, rgba(7, 13, 24, 0.95) 100%);
+}
+
+.slide-illu--problem img {
+  display: block;
+  width: auto;
+  max-width: 100%;
+  height: auto;
+  max-height: min(62vh, 620px);
+  margin: 0 auto;
+  border-radius: clamp(10px, 1.4vw, 14px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  object-fit: contain;
+  image-rendering: auto;
+  box-shadow:
+    0 14px 32px rgba(0, 0, 0, 0.45),
+    0 0 0 1px rgba(126, 179, 255, 0.08) inset;
+}
+
+#problem .slide__inner--split {
+  grid-template-columns: minmax(0, 1fr) minmax(0, min(46vw, 24rem));
+}
+
+@media (max-width: 800px) {
+  .slide__inner--split {
+    grid-template-columns: 1fr;
+    max-width: min(92vw, 52rem);
+  }
+
+  .slide-illu {
+    max-height: none;
+    order: -1;
+  }
+}
+
 .slide__text strong {
   color: var(--text);
 }
@@ -347,6 +579,12 @@ h2 {
   margin: 1.25rem 0 0;
   font-size: 0.95rem;
   color: var(--text-muted);
+}
+
+.slide:not(.slide--hero) .slide__caption {
+  font-size: clamp(0.95rem, 1.5vw, 1.05rem);
+  margin-top: clamp(1.25rem, 3vw, 1.75rem);
+  max-width: 36rem;
 }
 
 .hint {
@@ -371,16 +609,19 @@ kbd {
 }
 
 .feature-list {
-  margin: 1.25rem 0 0;
+  margin: clamp(1.25rem, 3vw, 2rem) 0 0;
   padding: 0;
   list-style: none;
+  max-width: 40rem;
 }
 
 .feature-list li {
   position: relative;
-  padding-left: 1.35rem;
-  margin-bottom: 0.65rem;
+  padding-left: 1.5rem;
+  margin-bottom: clamp(0.75rem, 1.8vw, 1rem);
   color: var(--text-muted);
+  font-size: clamp(1.05rem, 1.85vw, 1.2rem);
+  line-height: 1.55;
 }
 
 /* Каскад появления пунктов после reveal родителя */
@@ -456,10 +697,14 @@ code {
 }
 
 .placeholder-block {
-  padding: 1rem 1.25rem;
+  margin-top: 0.5rem;
+  padding: clamp(1.15rem, 2.5vw, 1.65rem) clamp(1.25rem, 3vw, 1.85rem);
   border-left: 3px solid var(--accent-line);
   background: var(--accent-soft);
   border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  font-size: clamp(1.05rem, 1.9vw, 1.22rem);
+  line-height: 1.65;
+  max-width: 38rem;
 }
 
 /* Flow SVG */
@@ -475,13 +720,13 @@ code {
 .flow-diagram svg {
   display: block;
   width: 100%;
-  min-width: 520px;
+  max-width: 100%;
   height: auto;
 }
 
 .flow-node rect {
-  fill: rgba(55, 88, 140, 0.28);
-  stroke: var(--border-strong);
+  fill: rgba(22, 36, 58, 0.55);
+  stroke: rgba(255, 255, 255, 0.14);
   stroke-width: 1;
   transition: fill 0.35s ease, stroke-color 0.35s ease;
 }
@@ -500,8 +745,8 @@ code {
 }
 
 .flow-node.is-active rect {
-  fill: rgba(90, 130, 190, 0.35);
-  stroke: var(--accent);
+  fill: rgba(40, 72, 108, 0.65);
+  stroke: rgba(93, 255, 200, 0.55);
 }
 
 .flow-diagram svg line {
@@ -536,7 +781,7 @@ code {
   width: 100%;
   transform: scaleX(var(--deck-progress));
   transform-origin: left center;
-  background: linear-gradient(90deg, #5a8fd4 0%, var(--accent) 100%);
+  background: linear-gradient(90deg, rgba(93, 255, 200, 0.65) 0%, var(--accent) 55%, #5a8fd4 100%);
   transition: transform 0.1s linear;
 }
 
@@ -598,15 +843,35 @@ code {
 }
 
 .deck-nav__list a.is-active {
-  background: var(--accent);
-  border-color: rgba(255, 255, 255, 0.35);
-  box-shadow: 0 0 0 1px rgba(126, 179, 255, 0.35);
+  background: transparent;
+  border-color: var(--accent-cinema);
+  box-shadow:
+    0 0 0 1px rgba(93, 255, 200, 0.45),
+    0 0 18px rgba(93, 255, 200, 0.22);
+  transform: scale(1.08);
 }
 
 @media (max-width: 640px) {
   .slide {
     padding-left: 1.25rem;
     padding-right: 1.25rem;
+  }
+
+  .slide:not(.slide--hero)::before {
+    left: 0.65rem;
+    inset: 0.45rem;
+    border-radius: 16px;
+  }
+
+  .slide:not(.slide--hero) .slide__inner {
+    min-height: min(82svh, 720px);
+    padding: 1.35rem 1.15rem;
+  }
+
+  .slide:not(.slide--hero)::after {
+    right: 0.85rem;
+    bottom: 4.75rem;
+    font-size: clamp(2rem, 16vw, 4.5rem);
   }
 
   .slide--hero-split .hero-split__panel {
@@ -694,5 +959,9 @@ code {
 
   .spline-orb {
     animation: none;
+  }
+
+  .slide:not(.slide--hero)::after {
+    opacity: 0;
   }
 }

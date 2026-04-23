@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Fraunces:ital,opsz,wght@0,400;0,550;0,600;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap"
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Fraunces:ital,opsz,wght@0,400;0,550;0,600;1,400&family=JetBrains+Mono:wght@400;500;600&family=Oswald:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="style.css" />
@@ -37,11 +37,11 @@
         <div class="hero-split">
           <div class="hero-split__panel reveal">
             <div class="hero-split__text">
-              <p class="eyebrow">Итоговый проект · MVP</p>
+              <p class="eyebrow">Итоговый проект</p>
               <h1 class="slide__title">TeleFlow</h1>
               <p class="slide__lead">
-                Дайджесты, тематическая база и черновики постов из Telegram — с
-                <span class="accent">LLM</span> и под вашим контролем.
+                Локальный AI-ассистент для Telegram: превращает поток каналов в
+                <span class="accent">структурированное знание</span> и готовые черновики постов.
               </p>
             </div>
             <div class="hero-split__spline" aria-hidden="true">
@@ -58,12 +58,21 @@
       </section>
 
       <section class="slide" id="problem" data-title="Проблема">
-        <div class="slide__inner reveal">
-          <h2>Проблема</h2>
-          <p class="slide__text">
-            Слишком много каналов и папок: непрочитанное копится, важное теряется,
-            на ручную выжимку уходит время каждый день.
-          </p>
+        <div class="slide__inner slide__inner--split reveal">
+          <div class="slide__col">
+            <h2>Проблема</h2>
+            <p class="slide__text">
+              Каналов и папок становится больше, чем внимания: полезные идеи тонут в шуме,
+              вручную делать выжимку долго, а контент для постов приходится собирать по кускам.
+            </p>
+          </div>
+          <figure class="slide-illu slide-illu--problem" aria-label="Скриншот Telegram с потоком каналов">
+            <img
+              src="./image.png"
+              alt="Скриншот списка Telegram-каналов с большим количеством непрочитанного"
+              loading="lazy"
+            />
+          </figure>
         </div>
       </section>
 
@@ -71,15 +80,15 @@
         <div class="slide__inner reveal">
           <h2>Что это</h2>
           <p class="slide__text">
-            Локальный <strong>Telegram userbot</strong> (Telethon): команды в ЛС,
-            сохранение материалов по темам, генерация текста через
+            Локальный <strong>Telegram userbot</strong> на Telethon: управление командами в ЛС,
+            тематическая база знаний и генерация постов через
             <strong>OpenRouter</strong>.
           </p>
           <ul class="feature-list">
-            <li><code>/digest</code> — дайджест из выбранных папок</li>
-            <li>Forward поста → выбор темы → база знаний</li>
-            <li><code>/write &lt;тема&gt;</code> — пост из накопленного</li>
-            <li><code>/stats</code> — сколько постов по темам</li>
+            <li><code>/digest</code> — приоритизированный дайджест из папок Telegram</li>
+            <li>Forward поста → выбор темы → сохранение в локальную базу</li>
+            <li><code>/write &lt;тема&gt;</code> — черновик поста из релевантных материалов</li>
+            <li><code>/stats</code>, <code>/list</code>, <code>/rm</code>, <code>/mv</code>, <code>/undo</code> — контроль базы</li>
           </ul>
         </div>
       </section>
@@ -127,13 +136,35 @@
       </section>
 
       <section class="slide" id="value" data-title="Польза">
-        <div class="slide__inner reveal">
-          <h2>Польза</h2>
-          <p class="slide__text">
-            Один контур: <strong>обзор</strong> непрочитанного,
-            <strong>архив</strong> по темам, <strong>черновик</strong> поста под свою ленту или канал —
-            без ручного копипаста по десятку чатов.
-          </p>
+        <div class="slide__inner slide__inner--split reveal">
+          <div class="slide__col">
+            <h2>Польза</h2>
+            <p class="slide__text">
+              Один рабочий контур: <strong>обзор</strong> непрочитанного,
+              <strong>архив</strong> лучших материалов и <strong>черновик</strong> поста —
+              без ручного копипаста между чатами и заметками.
+            </p>
+          </div>
+          <figure class="slide-illu slide-illu--wide" aria-hidden="true">
+            <svg viewBox="0 0 320 140" xmlns="http://www.w3.org/2000/svg" role="img">
+              <defs>
+                <marker id="val-arrow" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto">
+                  <polygon points="0 0, 7 3.5, 0 7" fill="currentColor" opacity="0.5" />
+                </marker>
+              </defs>
+              <g opacity="0.85">
+                <rect x="12" y="40" width="76" height="64" rx="10" fill="rgba(126,179,255,0.1)" stroke="currentColor" stroke-width="1" />
+                <text x="50" y="78" text-anchor="middle" fill="currentColor" font-family="DM Sans, sans-serif" font-size="11">обзор</text>
+                <line x1="92" y1="72" x2="118" y2="72" stroke="currentColor" stroke-width="1.2" marker-end="url(#val-arrow)" opacity="0.6" />
+                <rect x="124" y="40" width="76" height="64" rx="10" fill="rgba(126,179,255,0.08)" stroke="currentColor" stroke-width="1" />
+                <text x="162" y="78" text-anchor="middle" fill="currentColor" font-family="DM Sans, sans-serif" font-size="11">архив</text>
+                <line x1="204" y1="72" x2="230" y2="72" stroke="currentColor" stroke-width="1.2" marker-end="url(#val-arrow)" opacity="0.6" />
+                <rect x="236" y="40" width="76" height="64" rx="10" fill="rgba(126,179,255,0.14)" stroke="currentColor" stroke-width="1" />
+                <text x="274" y="78" text-anchor="middle" fill="currentColor" font-family="DM Sans, sans-serif" font-size="11">черновик</text>
+              </g>
+              <text x="160" y="124" text-anchor="middle" fill="currentColor" font-family="DM Sans, sans-serif" font-size="10" opacity="0.45">один контур в ЛС</text>
+            </svg>
+          </figure>
         </div>
       </section>
 
@@ -141,32 +172,49 @@
         <div class="slide__inner reveal">
           <h2>Контроль и безопасность</h2>
           <ul class="feature-list">
-            <li>Доступ только для пользователей из whitelist</li>
-            <li>Режим <code>DRY_RUN</code> — превью без записи в канал и state</li>
-            <li>Длинные ответы — отправка частями (лимиты Telegram)</li>
-            <li>Данные локально: <code>data/knowledge/</code>, <code>state.db</code></li>
+            <li>Доступ только для ID из whitelist (<code>ALLOWED_USER_IDS</code>)</li>
+            <li><code>DRY_RUN</code> — безопасный preview без записи в канал и <code>state.db</code></li>
+            <li>Ограничения и таймауты для OpenRouter (батчи, budget, max chars)</li>
+            <li>Chunked-отправка длинных сообщений с защитой от Telegram лимитов</li>
+            <li>Данные хранятся локально: <code>data/knowledge/</code> и <code>state.db</code></li>
           </ul>
+        </div>
+      </section>
+
+      <section class="slide" id="demo" data-title="Демо">
+        <div class="slide__inner reveal">
+          <h2>Живое демо за 90 секунд</h2>
+          <ul class="feature-list">
+            <li>1) Запуск: <code>python -m teleflow --daemon</code></li>
+            <li>2) В ЛС userbot: <code>/digest</code> → получаем сжатый обзор</li>
+            <li>3) Forward интересного поста → выбираем тему</li>
+            <li>4) <code>/write ai-агенты для бизнеса</code> → получаем черновик публикации</li>
+            <li>5) <code>/stats</code> и <code>/list бизнес</code> показывают рост базы знаний</li>
+          </ul>
+          <p class="slide__caption">Сценарий демонстрирует весь продуктовый цикл: сбор → отбор → сохранение → генерация.</p>
         </div>
       </section>
 
       <section class="slide" id="time" data-title="Время">
         <div class="slide__inner reveal">
           <h2>Время на проект</h2>
-          <p class="slide__text placeholder-block">
-            Замените этот блок: например «~__ часов», что заняло больше всего — Telegram /
-            LLM / команды в ЛС.
-          </p>
+          <ul class="feature-list">
+            <li><strong>Около 8 часов</strong> суммарно на проект TeleFlow</li>
+            <li>Самое трудное: авторизация/стабильность Telegram-сессии через Telethon</li>
+            <li>Второй сложный блок: предсказуемая работа LLM в лимитах времени и токенов</li>
+            <li>Отдельная сложность: стабильный доступ через прокси (SOCKS5/MTProto), таймауты и переподключения</li>
+          </ul>
         </div>
       </section>
 
       <section class="slide" id="roadmap" data-title="Дальше">
         <div class="slide__inner reveal">
-          <h2>Развитие</h2>
+          <h2>Дальнейшее развитие проекта</h2>
           <ul class="feature-list">
-            <li>Планировщик дайджестов по расписанию</li>
-            <li>Улучшение качества синтеза и шаблоны рубрик</li>
-            <li>Дашборд или отдельный UI поверх того же API</li>
-            <li>Хостинг на VPS вместо домашнего ПК</li>
+            <li>Планировщик дайджестов по расписанию и персональные правила отбора</li>
+            <li>Полуавтоматический режим: после дайджеста предлагать 2-3 готовых черновика постов на выбор</li>
+            <li>Система оценки качества: метки полезности, чтобы улучшать отбор и генерацию на реальных данных</li>
+            <li>Развернуть проект на сервере, чтобы сервис работал постоянно и не зависел от локального ПК</li>
           </ul>
         </div>
       </section>
@@ -174,20 +222,20 @@
       <section class="slide" id="course" data-title="Курс">
         <div class="slide__inner reveal">
           <h2>С курса</h2>
-          <p class="slide__text placeholder-block">
-            1–2 тезиса: агенты, границы ответственности ИИ, итерации в Cursor,
-            работа с конфигом и продакшен-ограничениями — на ваш выбор.
-          </p>
+          <ul class="feature-list">
+            <li>Контекст важнее длинного промпта: структура папок, <code>README</code>, <code>.cursorrules</code> и точечный <code>@</code>-контекст дают стабильный результат</li>
+            <li>Рабочий цикл: <strong>план → реализация → проверка</strong>; качество приходит через короткие итерации, а не через «один идеальный запрос»</li>
+            <li>Агенты = роли с правилами: у каждого AI-сотрудника должны быть границы, регламент и проверка качества на тестовых задачах</li>
+            <li>Работа с MCP, API и внешними сервисами</li>
+            <li>Ещё один важный вывод: ИИ нужно направлять и регулярно проверять, потому что без контроля он часто переусложняет архитектуру и может запутаться в логике проекта</li>
+          </ul>
         </div>
       </section>
 
       <section class="slide slide--cta" id="cta" data-title="Вопросы">
         <div class="slide__inner reveal">
-          <h2>Вопросы?</h2>
-          <p class="slide__lead">Спасибо за внимание.</p>
-          <p class="slide__caption">
-            Репозиторий: <code>assist-final-project</code> · см. <code>README.md</code>
-          </p>
+          <h2>Остались вопросы?</h2>
+          <p class="slide__lead">Спасибо за внимание!</p>
         </div>
       </section>
     </main>

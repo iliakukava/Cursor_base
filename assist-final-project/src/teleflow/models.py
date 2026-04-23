@@ -44,12 +44,17 @@ class AppConfig:
     tg_connection_retries: int
     tg_retry_delay_sec: int
     tg_rpc_timeout_sec: int
+    tg_send_chunk_delay_sec: float
+    tg_send_min_interval_sec: float
+    tg_send_peerflood_retry_sec: int
+    tg_send_max_chunk_len: int
     run_once_budget_sec: int
     source_folder_names: list[str]
     keywords: list[str]
     target_channel: str | None
     digest_top_n: int
     lookback_hours: int
+    llm_provider: str
     openrouter_api_key: str
     openrouter_model: str
     openrouter_max_tokens: int
@@ -58,6 +63,9 @@ class AppConfig:
     openrouter_digest_batch_size: int
     openrouter_digest_text_chars: int
     openrouter_digest_max_items: int
+    yandex_api_key: str
+    yandex_folder_id: str
+    yandex_model: str
     relevance_only: bool
     dry_run: bool
     state_db_path: str

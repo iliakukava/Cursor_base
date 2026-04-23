@@ -94,6 +94,8 @@
 
     function startLoop() {
       if (timer) return;
+      step = 0;
+      setStep(0);
       timer = window.setInterval(() => {
         step = (step + 1) % nodes.length;
         setStep(step);

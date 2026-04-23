@@ -38,6 +38,13 @@ def _parse_positive_int(name: str, default: int) -> int:
     return value
 
 
+def _parse_non_negative_float(name: str, default: float) -> float:
+    value = float(os.getenv(name, str(default)).strip())
+    if value < 0:
+        raise ValueError(f"{name} должен быть >= 0")
+    return value
+
+
 def _parse_optional_int(name: str) -> int | None:
     raw = os.getenv(name, "").strip()
     if not raw:
@@ -150,11 +157,23 @@ def load_config() -> AppConfig:
         if tg_proxy_type == "mtproto" and not tg_proxy_secret:
             raise ValueError("Для TG_PROXY_TYPE=mtproto заполните TG_PROXY_SECRET.")
 
-    openrouter_api_key = os.getenv("OPENROUTER_API_KEY", "").strip()
-    if not openrouter_api_key:
-        raise ValueError("OPENROUTER_API_KEY обязателен (https://openrouter.ai/keys).")
+    llm_provider = os.getenv("LLM_PROVIDER", "openrouter").strip().lower()
+    if llm_provider not in {"openrouter", "yandex"}:
+        raise ValueError("LLM_PROVIDER должен быть openrouter или yandex.")
 
+    openrouter_api_key = os.getenv("OPENROUTER_API_KEY", "").strip()
     openrouter_model = os.getenv("OPENROUTER_MODEL", "").strip() or "openai/gpt-4o-mini"
+    yandex_api_key = os.getenv("YANDEX_API_KEY", "").strip()
+    yandex_folder_id = os.getenv("YANDEX_FOLDER_ID", "").strip()
+    yandex_model = os.getenv("YANDEX_MODEL", "").strip() or "yandexgpt/latest"
+
+    if llm_provider == "openrouter" and not openrouter_api_key:
+        raise ValueError("Для LLM_PROVIDER=openrouter заполните OPENROUTER_API_KEY.")
+    if llm_provider == "yandex":
+        if not yandex_api_key:
+            raise ValueError("Для LLM_PROVIDER=yandex заполните YANDEX_API_KEY.")
+        if not yandex_folder_id:
+            raise ValueError("Для LLM_PROVIDER=yandex заполните YANDEX_FOLDER_ID.")
 
     return AppConfig(
         api_id=int(api_id_raw),
@@ -174,20 +193,28 @@ def load_config() -> AppConfig:
         tg_connection_retries=_parse_positive_int("TG_CONNECTION_RETRIES", 5),
         tg_retry_delay_sec=_parse_positive_int("TG_RETRY_DELAY_SEC", 2),
         tg_rpc_timeout_sec=_parse_positive_int("TG_RPC_TIMEOUT_SEC", 60),
+        tg_send_chunk_delay_sec=_parse_non_negative_float("TG_SEND_CHUNK_DELAY_SEC", 1.5),
+        tg_send_min_interval_sec=_parse_non_negative_float("TG_SEND_MIN_INTERVAL_SEC", 2.0),
+        tg_send_peerflood_retry_sec=_parse_positive_int("TG_SEND_PEERFLOOD_RETRY_SEC", 45),
+        tg_send_max_chunk_len=_parse_positive_int("TG_SEND_MAX_CHUNK_LEN", 2800),
         run_once_budget_sec=_parse_positive_int("RUN_ONCE_BUDGET_SEC", 420),
         source_folder_names=source_folder_names,
         keywords=_parse_keywords(os.getenv("KEYWORDS")),
         target_channel=target_channel,
         digest_top_n=_parse_int("DIGEST_TOP_N", 0),
         lookback_hours=_parse_int("LOOKBACK_HOURS", 48),
+        llm_provider=llm_provider,
         openrouter_api_key=openrouter_api_key,
         openrouter_model=openrouter_model,
         openrouter_max_tokens=_parse_positive_int("OPENROUTER_MAX_TOKENS", 8192),
-        openrouter_timeout_sec=_parse_positive_int("OPENROUTER_TIMEOUT_SEC", 120),
-        openrouter_annotate_budget_sec=_parse_positive_int("OPENROUTER_ANNOTATE_BUDGET_SEC", 300),
+        openrouter_timeout_sec=_parse_positive_int("OPENROUTER_TIMEOUT_SEC", 180),
+        openrouter_annotate_budget_sec=_parse_positive_int("OPENROUTER_ANNOTATE_BUDGET_SEC", 600),
         openrouter_digest_batch_size=_parse_positive_int("OPENROUTER_DIGEST_BATCH_SIZE", 8),
         openrouter_digest_text_chars=_parse_positive_int("OPENROUTER_DIGEST_TEXT_CHARS", 1600),
-        openrouter_digest_max_items=_parse_int("OPENROUTER_DIGEST_MAX_ITEMS", 80),
+        openrouter_digest_max_items=_parse_int("OPENROUTER_DIGEST_MAX_ITEMS", 120),
+        yandex_api_key=yandex_api_key,
+        yandex_folder_id=yandex_folder_id,
+        yandex_model=yandex_model,
         relevance_only=_parse_bool(os.getenv("RELEVANCE_ONLY"), False),
         dry_run=_parse_bool(os.getenv("DRY_RUN"), True),
         state_db_path=os.getenv("STATE_DB_PATH", "state.db").strip(),

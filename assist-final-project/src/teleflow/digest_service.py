@@ -12,6 +12,8 @@ from .summarizer import DigestAnnotator
 from .telegram_client import TgUserClient
 
 LOGGER = logging.getLogger(__name__)
+LOW_UNREAD_FALLBACK_THRESHOLD = 5
+LOW_UNREAD_FALLBACK_LOOKBACK_HOURS = 5 * 24
 
 
 async def build_digest(config: AppConfig, tg: TgUserClient) -> str:
@@ -22,13 +24,29 @@ async def build_digest(config: AppConfig, tg: TgUserClient) -> str:
         return "Подходящие каналы для выбранных папок не найдены."
 
     snapshots = await tg.get_inbox_snapshots(channels)
+    total_unread = sum(snapshot.unread_count for snapshot in snapshots.values())
+    use_recent_fallback = total_unread < LOW_UNREAD_FALLBACK_THRESHOLD
+    effective_lookback_hours = config.lookback_hours
+    if use_recent_fallback:
+        effective_lookback_hours = max(
+            config.lookback_hours,
+            LOW_UNREAD_FALLBACK_LOOKBACK_HOURS,
+        )
+        LOGGER.info(
+            "Непрочитанных постов мало (%d < %d): включен fallback по всем постам за %d часов.",
+            total_unread,
+            LOW_UNREAD_FALLBACK_THRESHOLD,
+            effective_lookback_hours,
+        )
+
     candidates = await collect_candidates(
         tg=tg,
         channels=channels,
-        lookback_hours=config.lookback_hours,
+        lookback_hours=effective_lookback_hours,
         keywords=config.keywords,
         snapshots=snapshots,
         max_messages_per_channel=config.collect_max_messages_per_channel,
+        include_all_recent=use_recent_fallback,
     )
     deduped_candidates = dedupe_candidates_by_fingerprint(candidates, config.dedupe_text_max_chars)
     dropped = len(candidates) - len(deduped_candidates)
@@ -38,7 +56,7 @@ async def build_digest(config: AppConfig, tg: TgUserClient) -> str:
     annotator = DigestAnnotator(config)
     annotated = annotator.annotate(candidates)
     ranked = rank_candidates(annotated)
-    return build_digest_text(ranked, config.digest_top_n, config.lookback_hours)
+    return build_digest_text(ranked, config.digest_top_n, effective_lookback_hours)
 
 
 async def run_digest_once(

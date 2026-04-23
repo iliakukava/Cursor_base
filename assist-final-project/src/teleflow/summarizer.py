@@ -6,31 +6,41 @@ import time
 from typing import Any
 
 from .models import AppConfig, PostCandidate
-from .openrouter import openrouter_chat
+from .openrouter import llm_chat
 
 LOGGER = logging.getLogger(__name__)
 
 
 def _annotate_instructions() -> str:
     return (
-        "Ты помощник для создания дайджеста. Ниже — JSON-массив объектов "
+        "Ты редактор строгого экспертного дайджеста. Твоя цель — оставить только самые интересные и практически релевантные посты. "
+        "Ниже — JSON-массив объектов "
         '{"idx": number, "text": "..."} по порядку постов.\n'
         "Верни СТРОГО JSON-массив и ничего больше (без markdown и комментариев). "
         "Один объект на каждый элемент входа:\n"
         '[{"idx":1,"keep":true,"importance":1-10,"category":"...","summary":"..."}]\n'
-        "Поле summary — краткая суть поста (1–2 предложения). "
+        "Критерии keep=true: есть конкретная новая информация, практические выводы, прикладные методы/цифры/факты, "
+        "или заметная стратегическая ценность для профессионального роста и принятия решений.\n"
+        "Критерии keep=false: вода, мотивационные общие фразы, очевидные банальности, реклама без ценности, повторы, "
+        "кликбейт, поверхностные пересказы без новых инсайтов.\n"
+        "Оцени importance строго: 9-10 = очень редкая и высокополезная информация; 7-8 = сильный полезный материал; "
+        "5-6 = средняя польза; 1-4 = низкая ценность.\n"
+        "Поле category — короткая тематическая метка (1-3 слова). "
+        "Поле summary — краткая суть поста (1 предложение, максимум 2, без воды). "
         "Никакого текста кроме JSON."
     )
 
 
 class DigestAnnotator:
-    """Разметка постов дайджеста через OpenRouter."""
+    """Разметка постов дайджеста через выбранный LLM-провайдер."""
 
     def __init__(self, config: AppConfig) -> None:
         self.config = config
+        model_name = config.openrouter_model if config.llm_provider == "openrouter" else config.yandex_model
         LOGGER.info(
-            "LLM: OpenRouter (model=%s, request_timeout=%ss, annotate_budget=%ss)",
-            config.openrouter_model,
+            "LLM: provider=%s (model=%s, request_timeout=%ss, annotate_budget=%ss)",
+            config.llm_provider,
+            model_name,
             config.openrouter_timeout_sec,
             config.openrouter_annotate_budget_sec,
         )
@@ -65,14 +75,26 @@ class DigestAnnotator:
             offset = hi
             stdin_json = self._payload_json(batch)
 
-            response = openrouter_chat(
-                api_key=self.config.openrouter_api_key,
-                model=self.config.openrouter_model,
+            api_key = (
+                self.config.openrouter_api_key
+                if self.config.llm_provider == "openrouter"
+                else self.config.yandex_api_key
+            )
+            model = (
+                self.config.openrouter_model
+                if self.config.llm_provider == "openrouter"
+                else self.config.yandex_model
+            )
+            response = llm_chat(
+                provider=self.config.llm_provider,
+                api_key=api_key,
+                model=model,
                 system=_annotate_instructions(),
                 user=stdin_json,
                 timeout_sec=self.config.openrouter_timeout_sec,
                 max_tokens=self.config.openrouter_max_tokens,
                 temperature=0.2,
+                yandex_folder_id=self.config.yandex_folder_id,
             )
 
             parsed = self._parse_json(response)
@@ -83,12 +105,12 @@ class DigestAnnotator:
             if not parsed:
                 if stripped and stripped != "[]":
                     LOGGER.warning(
-                        "OpenRouter вернул не-JSON (первые 240 симв.): %s",
+                        "LLM вернул не-JSON (первые 240 симв.): %s",
                         stripped.replace("\n", " ")[:240],
                     )
                 elif stripped == "[]":
                     LOGGER.warning(
-                        "OpenRouter вернул пустой JSON [] — для батча дефолтные summary из текста поста."
+                        "LLM вернул пустой JSON [] — для батча дефолтные summary из текста поста."
                     )
 
             by_idx = {entry.get("idx"): entry for entry in parsed if isinstance(entry, dict)}

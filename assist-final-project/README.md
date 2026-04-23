@@ -9,7 +9,7 @@
 - `/mv <id> <новая тема>` — перенести запись между темами.
 - `/undo` — отменить последнее успешное сохранение в базу (для текущего пользователя).
 - `forward` в ЛС userbot — сохранить пост в базу с темой.
-- `/write <тема> [--style=<ключ>]` — сгенерировать пост из сохраненных материалов темы.
+- `/write <тема поста> [--theme=<тема базы>]` — сгенерировать пост по релевантным материалам (глобально или в рамках темы базы).
 
 Подробные требования: `SPEC.md`.
 
@@ -27,24 +27,36 @@ pip install -r requirements.txt
 - `SOURCE_FOLDER_NAMES`
 - `ALLOWED_USER_IDS`
 - `THEMES`
-- **`OPENROUTER_API_KEY`** — обязательно, ключ с [openrouter.ai/keys](https://openrouter.ai/keys)
+- `LLM_PROVIDER` (`openrouter` или `yandex`)
+- для `LLM_PROVIDER=openrouter`: **`OPENROUTER_API_KEY`**
+- для `LLM_PROVIDER=yandex`: **`YANDEX_API_KEY`** и **`YANDEX_FOLDER_ID`**
 
 Установите зависимости из `requirements.txt` (в т.ч. `python-socks` для SOCKS/MTProxy в Telethon).
 
-### OpenRouter (единственный LLM)
+### LLM-провайдеры (OpenRouter / Yandex)
 
-Эндпоинт зашит в коде: `https://openrouter.ai/api/v1/chat/completions`.
+Переключение делается через `LLM_PROVIDER`:
+
+- `openrouter` → `https://openrouter.ai/api/v1/chat/completions`
+- `yandex` → `https://llm.api.cloud.yandex.net/foundationModels/v1/completion`
+
+> Для Yandex используется `Authorization: Api-Key <key>`, `x-folder-id: <folder_id>` и `modelUri` формата `gpt://<folder_id>/<model>`.
+> Формат взят из официальной документации Yandex AI Studio: [TextGeneration.Completion](https://aistudio.yandex.ru/docs/en/ai-studio/text-generation/api-ref/TextGeneration/completion.html) и [Authentication](https://aistudio.yandex.ru/docs/en/search-api/api-ref/authentication.html).
 
 | Переменная | Обязательность | По умолчанию |
 |------------|----------------|--------------|
+| `LLM_PROVIDER` | нет | `openrouter` |
 | `OPENROUTER_API_KEY` | да | — |
 | `OPENROUTER_MODEL` | нет | `openai/gpt-4o-mini` |
 | `OPENROUTER_MAX_TOKENS` | нет | `8192` |
-| `OPENROUTER_TIMEOUT_SEC` | нет | `120` — таймаут одного HTTP-запроса к OpenRouter |
-| `OPENROUTER_ANNOTATE_BUDGET_SEC` | нет | `300` — суммарный лимит времени на все батчи разметки в одном `/digest` |
+| `OPENROUTER_TIMEOUT_SEC` | нет | `180` — таймаут одного HTTP-запроса к LLM |
+| `OPENROUTER_ANNOTATE_BUDGET_SEC` | нет | `600` — суммарный лимит времени на все батчи разметки в одном `/digest` |
 | `OPENROUTER_DIGEST_BATCH_SIZE` | нет | `8` — постов за один запрос разметки |
 | `OPENROUTER_DIGEST_TEXT_CHARS` | нет | `1600` — обрезка текста поста на входе в LLM |
-| `OPENROUTER_DIGEST_MAX_ITEMS` | нет | `80` — максимум кандидатов с LLM-разметкой |
+| `OPENROUTER_DIGEST_MAX_ITEMS` | нет | `120` — максимум кандидатов с LLM-разметкой |
+| `YANDEX_API_KEY` | да (для `LLM_PROVIDER=yandex`) | — |
+| `YANDEX_FOLDER_ID` | да (для `LLM_PROVIDER=yandex`) | — |
+| `YANDEX_MODEL` | нет (для `LLM_PROVIDER=yandex`) | `yandexgpt/latest` |
 
 Опционально для политики OpenRouter: **`OPENROUTER_HTTP_REFERER`**, **`OPENROUTER_APP_TITLE`** (если не заданы, подставляются нейтральные значения по умолчанию).
 
@@ -52,20 +64,19 @@ pip install -r requirements.txt
 
 Параметры стабильности Telegram (прокси, connect, RPC и т.д.) — см. прежние пункты в `.env` / коде (`TG_*`, `RUN_ONCE_BUDGET_SEC`, `COLLECT_MAX_MESSAGES_PER_CHANNEL`).
 
-Параметры базы/дедупликации/стилей:
+Параметры базы и дедупликации:
 
 | Переменная | Обязательность | По умолчанию |
 |------------|----------------|--------------|
 | `DEDUPE_TEXT_MAX_CHARS` | нет | `6000` — сколько символов учитывать при SHA-256 для дедупа |
 | `LIST_ENTRIES_LIMIT` | нет | `10` — сколько записей выводить в `/list` |
-| `WRITE_STYLES_JSON` | нет | `{}` — JSON-объект вида `{"пост-вопрос":"...инструкции..."}` |
-| `WRITE_STYLES_PATH` | нет | — путь к JSON-файлу стилей (приоритет выше `WRITE_STYLES_JSON`) |
 
 ## 2) Режимы запуска
 
 ### Daemon (основной режим)
 
 ```powershell
+export PYTHONPATH=src
 python -m teleflow --daemon
 ```
 
@@ -102,7 +113,7 @@ python -m teleflow --once
 2. Написать в ЛС userbot: `/digest`.
 3. Переслать понравившийся текстовый пост.
 4. На запрос темы ответить (например: `спорт`).
-5. Выполнить `/write спорт`.
+5. Выполнить `/write ai-агенты для бизнеса`.
 6. Получить сгенерированный пост в ЛС.
 
 ## 5) Smoke-чеклист
@@ -112,13 +123,14 @@ python -m teleflow --once
 - [ ] Forward текстового поста вызывает запрос темы.
 - [ ] Валидная тема сохраняет `entry_*.json` в `data/knowledge/<тема>/`.
 - [ ] Невалидная тема не сохраняется, бот повторно просит выбрать тему.
-- [ ] `/write <тема>` читает только соответствующую папку темы.
+- [ ] `/write <тема поста>` ищет релевантные записи по всей базе.
+- [ ] `/write <тема поста> --theme=<тема базы>` ограничивает поиск выбранной темой базы.
 - [ ] `/list <тема>` показывает последние записи с id.
 - [ ] `/rm <id>` удаляет нужный файл.
 - [ ] `/mv <id> <тема>` переносит запись между папками тем.
 - [ ] `/undo` отменяет последнее сохранение.
-- [ ] `/write <тема>` при пустой теме отвечает без вызова LLM.
-- [ ] `/write <тема> --style=<ключ>` применяет стиль из `WRITE_STYLES_*`.
+- [ ] `/write` при пустой теме корректно подсказывает формат команды.
+- [ ] `/write` при отсутствии релевантных материалов отвечает, что контекста недостаточно.
 - [ ] Сообщения от не-whitelist пользователя игнорируются.
 
 ## 6) Troubleshooting
@@ -130,6 +142,7 @@ python -m teleflow --once
 - Если OpenRouter вернул ошибку — смотрите HTTP-код и тело в логе; проверьте баланс и id модели.
 - **`PeerFloodError` / лимит Telegram** при preview в ЛС: подождите или включите отправку в канал (`DRY_RUN=false`); между частями длинного текста бот делает паузу, но лимит всё равно может сработать.
 - Если `/write` дал короткий fallback — OpenRouter не вернул текст (сеть, лимиты, модель).
+- Если `/write` сообщает "Недостаточно контекста" — в базе нет релевантных записей под тему поста; переформулируйте тему или добавьте материалы.
 - Сессия Telegram: при неинтерактивном запуске без сессии процесс завершится с явной ошибкой (один раз войти в терминале).
 
 ## 7) Структура данных

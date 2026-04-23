@@ -3,6 +3,7 @@ from __future__ import annotations
 import asyncio
 import logging
 import sys
+import time
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Iterable
@@ -17,7 +18,7 @@ from telethon.tl.types import DialogFilter, InputDialogPeer, InputPeerChannel
 from .models import AppConfig
 
 LOGGER = logging.getLogger(__name__)
-TELEGRAM_MAX_MESSAGE_LEN = 3900
+TELEGRAM_ABSOLUTE_MAX_MESSAGE_LEN = 3900
 
 
 def _flush_log_handlers() -> None:
@@ -64,6 +65,7 @@ class ChannelInboxSnapshot:
 class TgUserClient:
     def __init__(self, config: AppConfig) -> None:
         self.config = config
+        self._last_send_ts = 0.0
         client_kwargs = self._build_client_kwargs()
         self.client = TelegramClient(
             config.session_name,
@@ -266,21 +268,42 @@ class TgUserClient:
                 continue
             yield msg
 
+    async def iter_recent_messages(
+        self,
+        entity: object,
+        since_dt: datetime,
+        max_messages: int,
+    ):
+        since_utc = since_dt.astimezone(timezone.utc)
+        async for msg in self.client.iter_messages(
+            entity,
+            reverse=False,
+            limit=max_messages,
+        ):
+            if not msg.date:
+                continue
+            if msg.date.astimezone(timezone.utc) < since_utc:
+                break
+            if not msg.message:
+                continue
+            yield msg
+
     async def mark_channel_read_upto(self, entity: object, max_id: int) -> None:
         if max_id <= 0:
             return
         await self.client.send_read_acknowledge(entity, max_id=max_id)
 
     async def send_text(self, target: str | int, text: str) -> None:
-        chunks = _split_for_telegram(text, TELEGRAM_MAX_MESSAGE_LEN)
+        chunk_len = min(self.config.tg_send_max_chunk_len, TELEGRAM_ABSOLUTE_MAX_MESSAGE_LEN)
+        chunks = _split_for_telegram(text, chunk_len)
         total = len(chunks)
         for idx, chunk in enumerate(chunks, start=1):
-            if idx > 1:
-                await asyncio.sleep(0.55)
+            await self._respect_send_rate(idx)
             prefix = f"[{idx}/{total}]\n" if total > 1 else ""
             body = f"{prefix}{chunk}"
             try:
                 await self.client.send_message(target, body, link_preview=False)
+                self._last_send_ts = time.monotonic()
             except FloodWaitError as exc:
                 wait = int(getattr(exc, "seconds", 5)) + 2
                 LOGGER.warning(
@@ -291,12 +314,25 @@ class TgUserClient:
                 )
                 await asyncio.sleep(wait)
                 await self.client.send_message(target, body, link_preview=False)
+                self._last_send_ts = time.monotonic()
             except PeerFloodError:
-                LOGGER.error(
-                    "Telegram PeerFlood: лимит отправки в этот чат (часто после серии сообщений). "
-                    "Подождите или отправьте дайджест в канал (DRY_RUN=false)."
+                wait = int(self.config.tg_send_peerflood_retry_sec)
+                LOGGER.warning(
+                    "Telegram PeerFlood на куске %s/%s. Ждем %ss и пробуем повторить отправку.",
+                    idx,
+                    total,
+                    wait,
                 )
-                raise
+                await asyncio.sleep(wait)
+                await self.client.send_message(target, body, link_preview=False)
+                self._last_send_ts = time.monotonic()
+
+    async def _respect_send_rate(self, chunk_index: int) -> None:
+        extra_delay = self.config.tg_send_chunk_delay_sec if chunk_index > 1 else 0.0
+        min_interval = self.config.tg_send_min_interval_sec + extra_delay
+        elapsed = time.monotonic() - self._last_send_ts
+        if elapsed < min_interval:
+            await asyncio.sleep(min_interval - elapsed)
 
     async def __aenter__(self) -> "TgUserClient":
         await self.connect()
