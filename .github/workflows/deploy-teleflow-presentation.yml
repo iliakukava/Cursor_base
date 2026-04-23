@@ -1,5 +1,6 @@
 # Публикует статическую презентацию из assist-final-project/presentation в GitHub Pages.
 # После первого успешного запуска: Settings → Pages → виден URL (обычно https://<user>.github.io/<repo>/).
+# Manual trigger note: keep this workflow push-active for presentation updates.
 
 name: Deploy TeleFlow presentation
 
